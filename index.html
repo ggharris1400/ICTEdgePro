@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ICTEdge Pro — AI-Powered Prop Firm Trading</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --void:#03010A;
+  --deep:#080118;
+  --space:#0D0225;
+  --p900:#1A0533;
+  --p800:#2D0A5E;
+  --p700:#3D1078;
+  --p600:#5B21B6;
+  --p500:#7C3AED;
+  --p400:#9B5DE5;
+  --p300:#C084FC;
+  --p200:#DDD6FE;
+  --neon:#BF5AF2;
+  --cyan:#00E5FF;
+  --pink:#FF0090;
+  --amber:#F5A623;
+  --green:#39FF14;
+  --white:#FFFFFF;
+  --gray:#94A3B8;
+  --mono:'SF Mono','Fira Code',monospace;
+  --head:'Orbitron',sans-serif;
+  --body:'Space Grotesk',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--void);color:var(--white);font-family:var(--body);font-size:14px;min-height:100vh;overflow-x:hidden}
+
+/* ── STARFIELD ── */
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.star{position:absolute;border-radius:50%;background:white;animation:twinkle var(--dur,3s) ease-in-out infinite var(--delay,0s)}
+@keyframes twinkle{0%,100%{opacity:var(--min,.2);transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
+.nebula{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
+.nb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.18) 0%,transparent 70%);top:-100px;left:-100px;animation:drift 20s ease-in-out infinite}
+.nb2{width:500px;height:500px;background:radial-gradient(circle,rgba(191,90,242,.14) 0%,transparent 70%);bottom:-50px;right:-50px;animation:drift 25s ease-in-out infinite reverse}
+.nb3{width:400px;height:400px;background:radial-gradient(circle,rgba(0,229,255,.08) 0%,transparent 70%);top:40%;left:50%;animation:drift 18s ease-in-out infinite 5s}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.05)}66%{transform:translate(-20px,15px) scale(.97)}}
+
+/* ── NAV ── */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid rgba(191,90,242,.15);background:rgba(3,1,10,.85);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100}
+.nav-logo{font-family:var(--head);font-size:16px;font-weight:700;letter-spacing:1px;text-shadow:0 0 20px rgba(191,90,242,.8)}
+.nav-logo span{color:var(--neon)}
+.nav-tabs{display:flex;gap:2px;background:rgba(255,255,255,.05);border-radius:10px;padding:3px;border:1px solid rgba(191,90,242,.15)}
+.nav-tab{padding:7px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:rgba(255,255,255,.45);transition:all .2s;font-family:var(--body);letter-spacing:.3px}
+.nav-tab.active{background:linear-gradient(135deg,var(--p700),var(--p600));color:var(--white);box-shadow:0 0 16px rgba(124,58,237,.5)}
+.nav-tab:hover:not(.active){color:var(--p300);background:rgba(124,58,237,.12)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.badge-tier{background:linear-gradient(135deg,var(--neon),var(--cyan));font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:1px;color:var(--void);font-family:var(--head);box-shadow:0 0 16px rgba(191,90,242,.6)}
+
+/* ── SCREENS ── */
+.screen{display:none;position:relative;z-index:1;animation:fadeIn .25s ease}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── LANDING ── */
+.hero{padding:72px 32px 48px;text-align:center;max-width:700px;margin:0 auto;position:relative}
+.hero::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:300px;background:radial-gradient(ellipse,rgba(124,58,237,.25) 0%,transparent 70%);pointer-events:none;border-radius:50%}
+.hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:16px;font-family:var(--head)}
+.hero-title{font-size:40px;font-weight:900;line-height:1.05;letter-spacing:-1px;margin-bottom:18px;font-family:var(--head);text-shadow:0 0 40px rgba(191,90,242,.4)}
+.hero-title em{font-style:normal;color:transparent;background:linear-gradient(135deg,var(--neon),var(--cyan));-webkit-background-clip:text;background-clip:text;text-shadow:none}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.6);line-height:1.7;max-width:500px;margin:0 auto 36px;font-weight:400}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:linear-gradient(135deg,var(--p500),var(--neon));color:var(--white);font-weight:700;font-size:13px;padding:13px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;font-family:var(--body);letter-spacing:.3px;box-shadow:0 0 24px rgba(124,58,237,.5),0 4px 12px rgba(0,0,0,.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 36px rgba(124,58,237,.7),0 8px 20px rgba(0,0,0,.4)}
+.btn-ghost{background:rgba(255,255,255,.04);color:var(--white);font-weight:500;font-size:13px;padding:13px 28px;border-radius:10px;border:1px solid rgba(191,90,242,.3);cursor:pointer;transition:all .2s;font-family:var(--body)}
+.btn-ghost:hover{border-color:var(--neon);background:rgba(191,90,242,.1);box-shadow:0 0 20px rgba(191,90,242,.2)}
+
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(191,90,242,.15);margin:0 24px 40px;border-radius:16px;overflow:hidden;border:1px solid rgba(191,90,242,.2)}
+.stat-cell{background:rgba(13,2,37,.9);padding:24px;text-align:center;backdrop-filter:blur(10px)}
+.stat-num{font-size:30px;font-weight:700;color:transparent;background:linear-gradient(135deg,var(--neon),var(--cyan));-webkit-background-clip:text;background-clip:text;font-family:var(--head);letter-spacing:-1px}
+.stat-label{font-size:11px;color:rgba(255,255,255,.35);margin-top:5px;text-transform:uppercase;letter-spacing:1px}
+
+.features-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 24px 36px}
+.feature-card{background:rgba(13,2,37,.8);border:1px solid rgba(191,90,242,.15);border-radius:16px;padding:22px;transition:all .3s;backdrop-filter:blur(10px)}
+.feature-card:hover{border-color:rgba(191,90,242,.4);box-shadow:0 0 30px rgba(124,58,237,.2);transform:translateY(-2px)}
+.feature-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:20px}
+.fi-purple{background:rgba(124,58,237,.2);box-shadow:0 0 12px rgba(124,58,237,.3)}
+.fi-cyan{background:rgba(0,229,255,.12);box-shadow:0 0 12px rgba(0,229,255,.2)}
+.fi-pink{background:rgba(255,0,144,.12);box-shadow:0 0 12px rgba(255,0,144,.2)}
+.fi-amber{background:rgba(245,166,35,.12);box-shadow:0 0 12px rgba(245,166,35,.2)}
+.feature-title{font-size:14px;font-weight:700;margin-bottom:8px;font-family:var(--head);font-size:12px;letter-spacing:.5px}
+.feature-desc{font-size:12px;color:rgba(255,255,255,.45);line-height:1.6}
+
+.pricing-section{padding:0 24px 48px}
+.section-title{font-size:22px;font-weight:700;margin-bottom:6px;font-family:var(--head);letter-spacing:.5px;text-align:center}
+.section-sub{font-size:13px;color:rgba(255,255,255,.4);text-align:center;margin-bottom:24px}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.price-card{background:rgba(13,2,37,.8);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:22px;position:relative;backdrop-filter:blur(10px);transition:all .3s}
+.price-card:hover{border-color:rgba(191,90,242,.3);transform:translateY(-3px)}
+.price-card.featured{border:1.5px solid var(--neon);box-shadow:0 0 40px rgba(191,90,242,.2)}
+.price-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--neon),var(--cyan));color:var(--void);font-size:10px;font-weight:700;padding:3px 12px;border-radius:20px;white-space:nowrap;font-family:var(--head);letter-spacing:.5px}
+.price-tier{font-size:10px;font-weight:700;color:var(--p300);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-family:var(--head)}
+.price-amount{font-size:30px;font-weight:700;font-family:var(--head);letter-spacing:-1px;color:var(--white)}
+.price-amount span{font-size:13px;font-weight:400;color:rgba(255,255,255,.35);font-family:var(--body)}
+.price-desc{font-size:12px;color:rgba(255,255,255,.38);margin:8px 0 14px;line-height:1.55}
+.price-features{list-style:none}
+.price-features li{font-size:11px;color:rgba(255,255,255,.55);padding:5px 0;border-top:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:7px}
+.check{color:var(--cyan);font-size:12px;text-shadow:0 0 8px rgba(0,229,255,.6)}
+.price-btn{width:100%;margin-top:16px;padding:11px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:var(--body);letter-spacing:.3px}
+.price-btn.primary{background:linear-gradient(135deg,var(--p500),var(--neon));color:var(--white);box-shadow:0 0 20px rgba(124,58,237,.4)}
+.price-btn.primary:hover{box-shadow:0 0 32px rgba(124,58,237,.6);transform:translateY(-1px)}
+.price-btn.ghost{background:rgba(255,255,255,.05);color:var(--white);border:1px solid rgba(191,90,242,.25)}
+.price-btn.ghost:hover{border-color:var(--neon);background:rgba(191,90,242,.1)}
+
+/* ── DASHBOARD ── */
+.dash{padding:16px;position:relative;z-index:1}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.dash-title{font-size:18px;font-weight:700;font-family:var(--head);letter-spacing:.5px}
+.market-status{display:flex;align-items:center;gap:7px;font-size:11px;color:rgba(255,255,255,.45)}
+.dot{width:7px;height:7px;border-radius:50%;animation:pulse 2s infinite}
+.dot.green{background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+.dot.red{background:var(--pink);box-shadow:0 0 8px var(--pink)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+
+.selector-panel{background:rgba(13,2,37,.8);border:1px solid rgba(191,90,242,.15);border-radius:14px;padding:14px;margin-bottom:12px;backdrop-filter:blur(10px)}
+.sel-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sel-row:last-child{margin-bottom:0}
+.sel-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.25);min-width:76px;font-family:var(--head)}
+.pill-grp{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);cursor:pointer;transition:all .15s;font-family:var(--body)}
+.pill:hover{border-color:var(--p300);color:var(--p300)}
+.pill.pi{background:rgba(124,58,237,.2);border-color:var(--p400);color:var(--p300);box-shadow:0 0 10px rgba(124,58,237,.3)}
+.pill.pg{background:rgba(245,166,35,.15);border-color:var(--amber);color:var(--amber);box-shadow:0 0 10px rgba(245,166,35,.2)}
+.pill.pt{background:rgba(0,229,255,.12);border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 10px rgba(0,229,255,.2)}
+
+.models-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.25);margin-bottom:10px;font-family:var(--head)}
+.models-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.model-card{background:rgba(13,2,37,.8);border:1px solid rgba(191,90,242,.12);border-radius:12px;padding:13px;cursor:pointer;transition:all .2s;position:relative;backdrop-filter:blur(8px)}
+.model-card:hover{border-color:rgba(191,90,242,.35);box-shadow:0 0 20px rgba(124,58,237,.15)}
+.model-card.sel{border-color:var(--neon);background:rgba(124,58,237,.12);box-shadow:0 0 20px rgba(191,90,242,.25)}
+.model-card.sel-gold{border-color:var(--amber);background:rgba(245,166,35,.08);box-shadow:0 0 20px rgba(245,166,35,.2)}
+.mc-check{position:absolute;top:10px;right:10px;width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:9px;transition:all .2s}
+.model-card.sel .mc-check{background:var(--neon);border-color:var(--neon);color:var(--void);font-weight:900;box-shadow:0 0 10px rgba(191,90,242,.6)}
+.model-card.sel-gold .mc-check{background:var(--amber);border-color:var(--amber);color:var(--void);font-weight:900}
+.mc-name{font-size:11px;font-weight:700;margin-bottom:3px;padding-right:20px;font-family:var(--head);letter-spacing:.3px}
+.mc-dir{font-size:10px;font-weight:600;margin-bottom:5px}
+.mc-desc{font-size:10px;color:rgba(255,255,255,.35);line-height:1.5;margin-bottom:7px}
+.mc-tags{display:flex;gap:3px;flex-wrap:wrap}
+.mc-tag{font-size:9px;font-weight:600;padding:2px 6px;border-radius:10px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.35)}
+.mc-tag.tt{background:rgba(0,229,255,.1);color:var(--cyan)}
+.mc-tag.ta{background:rgba(245,166,35,.1);color:var(--amber)}
+.mc-tag.tr{background:rgba(255,0,144,.1);color:var(--pink)}
+.mc-tag.tg{background:rgba(245,166,35,.1);color:var(--amber)}
+.mc-tag.tp{background:rgba(191,90,242,.1);color:var(--neon)}
+.mc-wide{grid-column:1/-1}
+
+.conf-panel{background:rgba(13,2,37,.8);border:1px solid rgba(191,90,242,.12);border-radius:12px;padding:13px;margin-bottom:12px;backdrop-filter:blur(8px)}
+.conf-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.25);margin-bottom:9px;font-family:var(--head)}
+.conf-list{display:flex;flex-direction:column;gap:6px}
+.conf-item{display:flex;align-items:flex-start;gap:8px;padding:6px 9px;border-radius:8px;background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.08)}
+.conf-check{width:15px;height:15px;border-radius:4px;border:1.5px solid rgba(255,255,255,.2);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:8px;transition:all .2s}
+.conf-check.ticked{background:var(--cyan);border-color:var(--cyan);color:var(--void);font-weight:900;box-shadow:0 0 8px rgba(0,229,255,.4)}
+.conf-text{font-size:11px;color:rgba(255,255,255,.55);line-height:1.45}
+.conf-text b{color:var(--white)}
+.step-list{display:flex;flex-direction:column;gap:4px;margin-top:9px;padding-top:9px;border-top:1px solid rgba(255,255,255,.06)}
+.step-item{display:flex;align-items:flex-start;gap:7px;font-size:10px;color:rgba(255,255,255,.42);line-height:1.5}
+.step-num{font-size:9px;font-weight:700;color:var(--neon);min-width:14px;margin-top:1px;text-shadow:0 0 6px rgba(191,90,242,.6)}
+
+.session-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.ses-card{background:rgba(13,2,37,.8);border:1px solid rgba(191,90,242,.1);border-radius:12px;padding:11px;backdrop-filter:blur(8px)}
+.ses-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.25);margin-bottom:3px;font-family:var(--head)}
+.ses-time{font-size:10px;font-family:var(--mono);color:var(--white);margin-bottom:5px}
+.ses-pill{display:inline-block;font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;font-family:var(--body)}
+.sp-act{background:rgba(0,229,255,.15);color:var(--cyan);box-shadow:0 0 10px rgba(0,229,255,.2)}
+.sp-done{background:rgba(255,0,144,.08);color:var(--pink)}
+
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px}
+.ac{background:rgba(13,2,37,.8);border:1px solid rgba(191,90,242,.1);border-radius:12px;padding:13px;backdrop-filter:blur(8px)}
+.ac-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.25);margin-bottom:9px;font-family:var(--head)}
+.bias-row{display:flex;align-items:center;gap:9px}
+.bias-arrow{font-size:22px}
+.bias-text{font-size:17px;font-weight:700;font-family:var(--head)}
+.bt-bull{color:var(--cyan);text-shadow:0 0 12px rgba(0,229,255,.5)}
+.bt-bear{color:var(--pink);text-shadow:0 0 12px rgba(255,0,144,.5)}
+.bias-meta{font-size:9px;color:rgba(255,255,255,.3);margin-top:3px}
+.conf-bar{height:4px;background:rgba(255,255,255,.07);border-radius:2px;margin-top:7px}
+.conf-fill{height:4px;border-radius:2px}
+.conf-pct{font-size:9px;color:rgba(255,255,255,.25);margin-top:3px}
+.macro-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.macro-item:last-child{border:none}
+.macro-nm{font-size:10px;color:rgba(255,255,255,.4)}
+.macro-vl{font-size:10px;font-family:var(--mono);font-weight:600}
+.up{color:var(--cyan);text-shadow:0 0 6px rgba(0,229,255,.4)}
+.dn{color:var(--pink);text-shadow:0 0 6px rgba(255,0,144,.3)}
+.nt{color:var(--amber)}
+
+.liq-card{background:rgba(13,2,37,.8);border:1px solid rgba(191,90,242,.1);border-radius:12px;padding:13px;margin-bottom:11px;backdrop-filter:blur(8px)}
+.liq-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.25);margin-bottom:10px;font-family:var(--head)}
+.liq-row{display:flex;align-items:center;gap:9px;padding:4px 0}
+.liq-price{font-family:var(--mono);font-size:12px;font-weight:600;min-width:64px}
+.liq-bw{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px}
+.liq-b{height:6px;border-radius:3px}
+.lb-buy{background:linear-gradient(90deg,rgba(0,229,255,.3),rgba(0,229,255,.7))}
+.lb-sell{background:linear-gradient(90deg,rgba(255,0,144,.3),rgba(255,0,144,.65))}
+.lb-gbuy{background:linear-gradient(90deg,rgba(245,166,35,.3),rgba(245,166,35,.7))}
+.lb-gsell{background:linear-gradient(90deg,rgba(255,0,144,.3),rgba(255,0,144,.65))}
+.liq-type{font-size:9px;font-weight:700;min-width:54px;text-align:right;font-family:var(--head);letter-spacing:.3px}
+.price-line{display:flex;align-items:center;gap:7px;padding:5px 0}
+.pl-bar{flex:1;height:1px;background:var(--amber);opacity:.5;box-shadow:0 0 4px rgba(245,166,35,.5)}
+.cur-price{font-family:var(--mono);font-size:10px;color:var(--amber);font-weight:700;text-shadow:0 0 8px rgba(245,166,35,.5)}
+
+.sig-card{border-radius:12px;padding:14px;margin-bottom:11px;border:1px solid}
+.sc-bull{background:rgba(0,229,255,.04);border-color:rgba(0,229,255,.25)}
+.sc-bear{background:rgba(255,0,144,.04);border-color:rgba(255,0,144,.22)}
+.sc-gold{background:rgba(245,166,35,.04);border-color:rgba(245,166,35,.3)}
+.sig-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.sig-badges{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.sb{font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.7px;font-family:var(--head)}
+.sb-ap{background:rgba(245,166,35,.18);color:var(--amber);border:1px solid rgba(245,166,35,.4);box-shadow:0 0 8px rgba(245,166,35,.2)}
+.sb-bull{background:rgba(0,229,255,.15);color:var(--cyan);box-shadow:0 0 8px rgba(0,229,255,.2)}
+.sb-bear{background:rgba(255,0,144,.12);color:var(--pink)}
+.sb-gold{background:rgba(245,166,35,.15);color:var(--amber)}
+.sb-mdl{background:rgba(255,255,255,.07);color:rgba(255,255,255,.5)}
+.sig-time{font-size:10px;color:rgba(255,255,255,.25);font-family:var(--mono)}
+.sig-pairs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:11px}
+.sp2{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:9px;text-align:center}
+.sp-lbl{font-size:9px;color:rgba(255,255,255,.3);margin-bottom:3px;font-family:var(--head);letter-spacing:.5px}
+.sp-val{font-size:13px;font-family:var(--mono);font-weight:700}
+.sig-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:11px}
+.stag{font-size:9px;font-weight:600;padding:3px 7px;border-radius:20px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.4)}
+.stag-hl{background:rgba(0,229,255,.1);color:var(--cyan);border:1px solid rgba(0,229,255,.2)}
+.stag-hl-gold{background:rgba(245,166,35,.1);color:var(--amber);border:1px solid rgba(245,166,35,.2)}
+.exec-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.exec-btn{width:100%;padding:11px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:var(--body);letter-spacing:.3px}
+.eb-auto{background:linear-gradient(135deg,var(--p500),var(--neon));color:var(--white);box-shadow:0 0 20px rgba(124,58,237,.4)}
+.eb-auto:hover{box-shadow:0 0 32px rgba(191,90,242,.6);transform:translateY(-1px)}
+.eb-auto-gold{background:linear-gradient(135deg,var(--amber),#E8A317);color:var(--void);box-shadow:0 0 20px rgba(245,166,35,.3)}
+.eb-manual{background:rgba(255,255,255,.06);color:var(--white);border:1px solid rgba(255,255,255,.12)}
+.eb-manual:hover{border-color:var(--p300);background:rgba(124,58,237,.1)}
+
+/* ── LOCKOUT ── */
+.lockout-screen{padding:36px 22px;text-align:center;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1}
+.lock-icon{font-size:52px;margin-bottom:14px;filter:drop-shadow(0 0 20px rgba(191,90,242,.6))}
+.lock-title{font-size:22px;font-weight:700;margin-bottom:7px;font-family:var(--head);letter-spacing:.5px;text-shadow:0 0 20px rgba(191,90,242,.4)}
+.lock-sub{font-size:12px;color:rgba(255,255,255,.4);line-height:1.7;max-width:300px;margin:0 auto 20px}
+.trade-result{background:rgba(13,2,37,.9);border:1px solid rgba(191,90,242,.2);border-radius:14px;padding:18px;width:100%;max-width:320px;margin-bottom:20px;backdrop-filter:blur(10px);box-shadow:0 0 30px rgba(124,58,237,.1)}
+.rr{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.rr:last-child{border:none}
+.rl{font-size:10px;color:rgba(255,255,255,.35)}
+.rv{font-size:10px;font-family:var(--mono);font-weight:600}
+.countdown{font-family:var(--head);font-size:38px;font-weight:700;color:transparent;background:linear-gradient(135deg,var(--neon),var(--cyan));-webkit-background-clip:text;background-clip:text;letter-spacing:3px;margin-bottom:6px;text-shadow:none;filter:drop-shadow(0 0 16px rgba(191,90,242,.5))}
+.cd-lbl{font-size:10px;color:rgba(255,255,255,.25);margin-bottom:20px;font-family:var(--head);letter-spacing:.5px}
+.rule-list{background:rgba(13,2,37,.9);border:1px solid rgba(191,90,242,.15);border-radius:12px;padding:14px;width:100%;max-width:320px;text-align:left;backdrop-filter:blur(10px)}
+.rl-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.2);margin-bottom:9px;font-family:var(--head)}
+.rule-item{display:flex;gap:8px;padding:5px 0}
+.ri-n{font-size:9px;font-weight:700;color:var(--neon);min-width:12px;text-shadow:0 0 6px rgba(191,90,242,.6)}
+.ri-t{font-size:10px;color:rgba(255,255,255,.38);line-height:1.55}
+
+/* ── ACCOUNT ── */
+.acc-screen{padding:16px;position:relative;z-index:1}
+.acc-hdr{background:rgba(13,2,37,.9);border:1px solid rgba(191,90,242,.2);border-radius:14px;padding:18px;margin-bottom:11px;display:flex;align-items:center;gap:14px;backdrop-filter:blur(10px);box-shadow:0 0 30px rgba(124,58,237,.1)}
+.avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--p500),var(--neon));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--void);font-family:var(--head);box-shadow:0 0 20px rgba(191,90,242,.4)}
+.acc-name{font-size:15px;font-weight:700;font-family:var(--head)}
+.acc-email{font-size:11px;color:rgba(255,255,255,.3);margin-top:2px}
+.mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:11px}
+.ms{background:rgba(13,2,37,.8);border:1px solid rgba(191,90,242,.1);border-radius:12px;padding:11px;text-align:center;backdrop-filter:blur(8px)}
+.ms-val{font-size:20px;font-weight:700;font-family:var(--head)}
+.ms-lbl{font-size:9px;color:rgba(255,255,255,.28);margin-top:3px;text-transform:uppercase;letter-spacing:.7px}
+.sec-card{background:rgba(13,2,37,.8);border:1px solid rgba(191,90,242,.1);border-radius:14px;padding:15px;margin-bottom:11px;backdrop-filter:blur(8px)}
+.sc-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.22);margin-bottom:11px;font-family:var(--head)}
+.set-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.set-row:last-child{border:none}
+.set-name{font-size:12px;font-weight:500}
+.set-desc{font-size:10px;color:rgba(255,255,255,.28);margin-top:2px}
+.toggle{width:34px;height:19px;border-radius:10px;position:relative;cursor:pointer;transition:all .2s;border:none;flex-shrink:0}
+.toggle.on{background:linear-gradient(135deg,var(--p500),var(--neon));box-shadow:0 0 10px rgba(191,90,242,.4)}
+.toggle.off{background:rgba(255,255,255,.1)}
+.toggle::after{content:'';position:absolute;width:13px;height:13px;background:#fff;border-radius:50%;top:3px;transition:left .2s}
+.toggle.on::after{left:18px}
+.toggle.off::after{left:3px}
+.broker-row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(191,90,242,.08);border-radius:9px;padding:11px;margin-bottom:7px}
+.br-info{display:flex;align-items:center;gap:9px}
+.br-icon{width:30px;height:30px;border-radius:8px;background:rgba(191,90,242,.1);display:flex;align-items:center;justify-content:center;font-size:13px}
+.br-name{font-size:12px;font-weight:600}
+.br-status{font-size:10px;color:rgba(255,255,255,.28);margin-top:1px}
+.conn-btn{font-size:10px;font-weight:700;padding:5px 12px;border-radius:7px;cursor:pointer;border:none;font-family:var(--body)}
+.cb-conn{background:rgba(0,229,255,.1);color:var(--cyan);border:1px solid rgba(0,229,255,.2);box-shadow:0 0 8px rgba(0,229,255,.1)}
+.cb-disc{background:rgba(255,255,255,.05);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.08)}
+
+/* ── GLOW DIVIDER ── */
+.glow-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(191,90,242,.4),rgba(0,229,255,.4),transparent);margin:0 0 40px;box-shadow:0 0 10px rgba(191,90,242,.2)}
+</style>
+</head>
+<body>
+
+<!-- Starfield -->
+<div id="stars"></div>
+<div class="nebula nb1"></div>
+<div class="nebula nb2"></div>
+<div class="nebula nb3"></div>
+
+<nav class="nav">
+  <div class="nav-logo">ICT<span>Edge</span> Pro</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="show('landing')">Home</button>
+    <button class="nav-tab" onclick="show('dashboard')">Dashboard</button>
+    <button class="nav-tab" onclick="show('lockout')">Lockout</button>
+    <button class="nav-tab" onclick="show('account')">Account</button>
+  </div>
+  <div class="nav-right">
+    <span class="badge-tier">AUTO PRO</span>
+  </div>
+</nav>
+
+<!-- ══ LANDING ══ -->
+<div id="screen-landing" class="screen active">
+  <div class="hero">
+    <div class="hero-eyebrow">ICT-Powered Prop Firm Intelligence</div>
+    <h1 class="hero-title">Pass Your Challenge.<br/><em>Every. Single. Time.</em></h1>
+    <p class="hero-sub">Five precision ICT entry models. One trade per day. Your account locks after execution — no overtrading, no blown challenges. AI that trades like an ICT master.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="show('dashboard')">See Live Dashboard →</button>
+      <button class="btn-ghost">Watch Demo</button>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-cell"><div class="stat-num">70%+</div><div class="stat-label">Win Rate</div></div>
+    <div class="stat-cell"><div class="stat-num">1/day</div><div class="stat-label">Max Trades</div></div>
+    <div class="stat-cell"><div class="stat-num">2.8R</div><div class="stat-label">Avg Risk/Reward</div></div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon fi-purple">🎯</div>
+      <div class="feature-title">5 ICT Entry Models</div>
+      <div class="feature-desc">London & Asia killzone sweeps, New Day Opening Gap, PDH bullish and PDL bearish — each with full CISD, IFVG and BOS confluence logic.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-cyan">📊</div>
+      <div class="feature-title">Macro Fundamentals</div>
+      <div class="feature-desc">CPI, NFP, DXY, VIX, real yields — all feeding into a directional bias before market open so you're always trading with the big money.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-pink">🌙</div>
+      <div class="feature-title">Session Liquidity Map</div>
+      <div class="feature-desc">Asia & London H/L mapped in real time. BSL/SSL, PDH/PDL and NDOG levels displayed live — see exactly where price is hunting.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-amber">🔒</div>
+      <div class="feature-title">Discipline Lockout</div>
+      <div class="feature-desc">Win or lose — account locks after your one daily trade. No override. Prop firm rules enforced by the platform. Your funded account stays protected.</div>
+    </div>
+  </div>
+
+  <div class="glow-divider"></div>
+
+  <div class="pricing-section">
+    <div class="section-title">Choose Your Edge</div>
+    <div class="section-sub">Cancel anytime. 7-day free trial on all plans.</div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-tier">Signals</div>
+        <div class="price-amount">£79<span>/mo</span></div>
+        <div class="price-desc">AI alerts with full ICT analysis. You execute manually.</div>
+        <ul class="price-features">
+          <li><span class="check">✓</span> All 5 entry models</li>
+          <li><span class="check">✓</span> NQ, ES, SPX, Gold</li>
+          <li><span class="check">✓</span> Liquidity levels panel</li>
+          <li><span class="check">✓</span> Telegram alerts</li>
+          <li><span class="check">✓</span> Macro bias report</li>
+          <li style="opacity:.3">✗ Auto-execution</li>
+          <li style="opacity:.3">✗ Account lockout</li>
+        </ul>
+        <button class="price-btn ghost" onclick="show('account')">Get Started</button>
+      </div>
+      <div class="price-card featured">
+        <div class="price-badge">Most Popular</div>
+        <div class="price-tier">Auto Pro</div>
+        <div class="price-amount">£199<span>/mo</span></div>
+        <div class="price-desc">Full AI execution + discipline lockout. Set and forget.</div>
+        <ul class="price-features">
+          <li><span class="check">✓</span> Everything in Signals</li>
+          <li><span class="check">✓</span> Auto-trade execution</li>
+          <li><span class="check">✓</span> Discipline lockout</li>
+          <li><span class="check">✓</span> TradingView webhook</li>
+          <li><span class="check">✓</span> Broker integration</li>
+          <li><span class="check">✓</span> Daily trade report</li>
+        </ul>
+        <button class="price-btn primary" onclick="show('dashboard')">Start Free Trial</button>
+      </div>
+      <div class="price-card">
+        <div class="price-tier">Elite</div>
+        <div class="price-amount">£399<span>/mo</span></div>
+        <div class="price-desc">Multi-account, priority AI, backtested strategy reports.</div>
+        <ul class="price-features">
+          <li><span class="check">✓</span> Everything in Auto Pro</li>
+          <li><span class="check">✓</span> Up to 5 accounts</li>
+          <li><span class="check">✓</span> Backtest reports PDF</li>
+          <li><span class="check">✓</span> Priority signal queue</li>
+          <li><span class="check">✓</span> 1-on-1 onboarding</li>
+          <li><span class="check">✓</span> Slack support</li>
+        </ul>
+        <button class="price-btn ghost" onclick="show('account')">Contact Us</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div id="screen-dashboard" class="screen dash">
+  <div class="dash-header">
+    <div class="dash-title" id="dash-title">Today's Setup</div>
+    <div class="market-status"><div class="dot green"></div><span id="mkt-lbl">NY Open · 09:31 EST</span></div>
+  </div>
+
+  <div class="selector-panel">
+    <div class="sel-row">
+      <span class="sel-lbl">Instrument</span>
+      <div class="pill-grp">
+        <div class="pill pi" onclick="selInst(this,'NQ')">NQ1!</div>
+        <div class="pill" onclick="selInst(this,'ES')">ES1!</div>
+        <div class="pill" onclick="selInst(this,'SPX')">SPX</div>
+        <div class="pill" onclick="selInst(this,'GOLD')" style="color:var(--amber);border-color:rgba(245,166,35,.2)">GOLD</div>
+      </div>
+    </div>
+    <div class="sel-row" style="margin-bottom:0">
+      <span class="sel-lbl">Entry TF</span>
+      <div class="pill-grp">
+        <div class="pill pt" onclick="selTF(this,'1m')">1m</div>
+        <div class="pill" onclick="selTF(this,'3m')">3m</div>
+        <div class="pill" onclick="selTF(this,'5m')">5m</div>
+        <div class="pill" onclick="selTF(this,'15m')">15m</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="models-lbl">Entry Model — Select One</div>
+  <div class="models-grid" id="models-grid">
+    <div class="model-card sel" onclick="selModel(this,0)">
+      <div class="mc-check">✓</div>
+      <div class="mc-name">London Killzone</div>
+      <div class="mc-dir" style="color:#0096C7">Long or Short</div>
+      <div class="mc-desc">London H/L swept (BSL or SSL) → CISD + first IFVG on entry TF. Target: next opposite liquidity.</div>
+      <div class="mc-tags"><span class="mc-tag tt">BSL/SSL</span><span class="mc-tag tt">London</span><span class="mc-tag">2:1 min</span></div>
+    </div>
+    <div class="model-card" onclick="selModel(this,1)">
+      <div class="mc-check"></div>
+      <div class="mc-name">Asia Killzone</div>
+      <div class="mc-dir" style="color:var(--cyan)">Long or Short</div>
+      <div class="mc-desc">Asia H/L swept (BSL or SSL) → CISD + first IFVG on entry TF. Target: next opposite liquidity.</div>
+      <div class="mc-tags"><span class="mc-tag tt">BSL/SSL</span><span class="mc-tag tt">Asia</span><span class="mc-tag">2:1 min</span></div>
+    </div>
+    <div class="model-card" onclick="selModel(this,2)">
+      <div class="mc-check"></div>
+      <div class="mc-name">New Day Opening Gap</div>
+      <div class="mc-dir" style="color:var(--neon)">Long or Short</div>
+      <div class="mc-desc">NDOG must exist. Asia/London sweep → CISD + IFVG. Target: NDOG equilibrium (50%).</div>
+      <div class="mc-tags"><span class="mc-tag tp">NDOG</span><span class="mc-tag tp">EQ target</span><span class="mc-tag">2:1 min</span></div>
+    </div>
+    <div class="model-card" onclick="selModel(this,3)">
+      <div class="mc-check"></div>
+      <div class="mc-name">PDH Bullish <span style="color:var(--amber)">⚠</span></div>
+      <div class="mc-dir" style="color:#39FF14">Long only</div>
+      <div class="mc-desc">Asia/London LOW swept (SSL) → bullish CISD + IFVG. Target: Previous Day High.</div>
+      <div class="mc-tags"><span class="mc-tag" style="background:rgba(57,255,20,.1);color:#39FF14">SSL</span><span class="mc-tag" style="background:rgba(57,255,20,.1);color:#39FF14">PDH target</span><span class="mc-tag ta">Bigger risk</span></div>
+    </div>
+    <div class="model-card mc-wide" onclick="selModel(this,4)">
+      <div class="mc-check"></div>
+      <div class="mc-name">PDL Bearish <span style="color:var(--amber)">⚠</span></div>
+      <div class="mc-dir" style="color:var(--pink)">Short only</div>
+      <div class="mc-desc">Asia/London HIGH swept (BSL) → bearish CISD + IFVG. Target: Previous Day Low. Stop above sweep wick high.</div>
+      <div class="mc-tags"><span class="mc-tag tr">BSL</span><span class="mc-tag tr">PDL target</span><span class="mc-tag ta">Bigger risk</span></div>
+    </div>
+  </div>
+
+  <div class="conf-panel" id="conf-panel">
+    <div class="conf-title" id="conf-title">Required Confluences — London Killzone</div>
+    <div class="conf-list" id="conf-list"></div>
+    <div class="step-list" id="step-list"></div>
+  </div>
+
+  <div class="session-bar">
+    <div class="ses-card"><div class="ses-name">Asia Killzone</div><div class="ses-time">20:00–00:00</div><div class="ses-pill sp-done">Liq marked ✓</div></div>
+    <div class="ses-card"><div class="ses-name">London Killzone</div><div class="ses-time">02:00–05:00</div><div class="ses-pill sp-done">Swept SSL ✓</div></div>
+    <div class="ses-card"><div class="ses-name">NY Open</div><div class="ses-time">09:30–11:00</div><div class="ses-pill sp-act">● Live now</div></div>
+  </div>
+
+  <div class="analysis-grid">
+    <div class="ac">
+      <div class="ac-lbl">Macro + HTF Bias</div>
+      <div class="bias-row"><div class="bias-arrow" id="bias-arrow">↑</div><div><div class="bias-text bt-bull" id="bias-text">Bullish</div><div class="bias-meta" id="bias-meta">CPI miss · DXY weak · HTF OB respected</div></div></div>
+      <div class="conf-bar"><div class="conf-fill" id="conf-fill" style="width:82%;background:linear-gradient(90deg,var(--p500),var(--cyan))"></div></div>
+      <div class="conf-pct">Confidence: <span id="conf-pct">82%</span></div>
+    </div>
+    <div class="ac">
+      <div class="ac-lbl" id="macro-lbl">Macro Fundamentals</div>
+      <div id="macro-list">
+        <div class="macro-item"><span class="macro-nm">CPI (MoM)</span><span class="macro-vl dn">2.1% ↓</span></div>
+        <div class="macro-item"><span class="macro-nm">DXY</span><span class="macro-vl dn">103.4 ↓</span></div>
+        <div class="macro-item"><span class="macro-nm">VIX</span><span class="macro-vl nt">14.2 →</span></div>
+        <div class="macro-item"><span class="macro-nm">Fed stance</span><span class="macro-vl up">Dovish ↑</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="liq-card">
+    <div class="liq-title" id="liq-title">Liquidity Map · NQ1!</div>
+    <div id="liq-ladder">
+      <div class="liq-row"><span class="liq-price dn">22,140</span><div class="liq-bw"><div class="liq-b lb-sell" style="width:85%"></div></div><span class="liq-type dn">BSL</span></div>
+      <div class="liq-row"><span class="liq-price dn">21,980</span><div class="liq-bw"><div class="liq-b lb-sell" style="width:60%"></div></div><span class="liq-type dn">EQH</span></div>
+      <div class="price-line"><span class="cur-price">● 21,847</span><div class="pl-bar"></div><span style="font-size:9px;color:var(--amber)">Current</span></div>
+      <div class="liq-row"><span class="liq-price up">21,720</span><div class="liq-bw"><div class="liq-b lb-buy" style="width:75%"></div></div><span class="liq-type up">SSL ✓</span></div>
+      <div class="liq-row"><span class="liq-price up">21,580</span><div class="liq-bw"><div class="liq-b lb-buy" style="width:45%"></div></div><span class="liq-type up">HTF OB</span></div>
+    </div>
+  </div>
+
+  <div class="sig-card sc-bull" id="sig-card">
+    <div class="sig-hdr">
+      <div class="sig-badges">
+        <span class="sb sb-ap">A+ Setup</span>
+        <span class="sb sb-bull" id="sig-dir">Long NQ</span>
+        <span class="sb sb-mdl" id="sig-mdl">London Killzone · 1m</span>
+      </div>
+      <span class="sig-time">09:33 EST</span>
+    </div>
+    <div class="sig-pairs">
+      <div class="sp2"><div class="sp-lbl">Entry</div><div class="sp-val up" id="sig-entry">21,720</div></div>
+      <div class="sp2"><div class="sp-lbl">Stop Loss</div><div class="sp-val dn" id="sig-sl">21,614</div></div>
+      <div class="sp2"><div class="sp-lbl">Target</div><div class="sp-val up" id="sig-tp">22,070</div></div>
+    </div>
+    <div class="sig-tags" id="sig-tags">
+      <span class="stag stag-hl">SSL swept</span><span class="stag stag-hl">IFVG entry</span><span class="stag stag-hl">CISD confirmed</span><span class="stag stag-hl">MSS/BOS</span><span class="stag">Next liq target</span><span class="stag">3.2R</span>
+    </div>
+    <div class="exec-row">
+      <button class="exec-btn eb-auto" id="exec-auto" onclick="executeTrade()">⚡ Auto-Execute</button>
+      <button class="exec-btn eb-manual" onclick="show('lockout')">Signal Only →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOCKOUT ══ -->
+<div id="screen-lockout" class="screen lockout-screen">
+  <div class="lock-icon">🔒</div>
+  <div class="lock-title">Account Locked For Today</div>
+  <div class="lock-sub">Your A+ trade executed at 09:33 EST. The market has been traded. Your discipline is protected. Come back tomorrow.</div>
+  <div class="trade-result">
+    <div class="rr"><span class="rl">Instrument</span><span class="rv" id="lock-inst">NQ1! Long</span></div>
+    <div class="rr"><span class="rl">Entry model</span><span class="rv" id="lock-mdl">London Killzone · 1m</span></div>
+    <div class="rr"><span class="rl">Entry</span><span class="rv" id="lock-entry">21,720</span></div>
+    <div class="rr"><span class="rl">Confluences</span><span class="rv up">All 4 ticked ✓</span></div>
+    <div class="rr"><span class="rl">Status</span><span class="rv up">● Running +2.1R</span></div>
+    <div class="rr"><span class="rl">Setup grade</span><span class="rv nt">A+ (91/100)</span></div>
+    <div class="rr"><span class="rl">Risk</span><span class="rv">1% account</span></div>
+  </div>
+  <div class="countdown" id="countdown">14:26:41</div>
+  <div class="cd-lbl">Until Tomorrow's London Killzone Analysis</div>
+  <div class="rule-list">
+    <div class="rl-title">Prop Firm Protection Rules</div>
+    <div class="rule-item"><span class="ri-n">1</span><span class="ri-t">One trade per day — win or lose, the account locks at execution</span></div>
+    <div class="rule-item"><span class="ri-n">2</span><span class="ri-t">Only A+ setups with all confluences ticked and 80%+ confidence score</span></div>
+    <div class="rule-item"><span class="ri-n">3</span><span class="ri-t">Risk capped at 1% per trade regardless of conviction level</span></div>
+    <div class="rule-item"><span class="ri-n">4</span><span class="ri-t">No override once locked — contact support only for technical failures</span></div>
+  </div>
+</div>
+
+<!-- ══ ACCOUNT ══ -->
+<div id="screen-account" class="screen acc-screen">
+  <div class="acc-hdr">
+    <div class="avatar">GN</div>
+    <div>
+      <div class="acc-name">George N.</div>
+      <div class="acc-email">george@nighttimefinance.com</div>
+      <div style="margin-top:6px"><span class="badge-tier">AUTO PRO</span></div>
+    </div>
+  </div>
+  <div class="mini-stats">
+    <div class="ms"><div class="ms-val up">74%</div><div class="ms-lbl">Win Rate</div></div>
+    <div class="ms"><div class="ms-val">23</div><div class="ms-lbl">Trades</div></div>
+    <div class="ms"><div class="ms-val up">+31R</div><div class="ms-lbl">Total Return</div></div>
+  </div>
+  <div class="sec-card">
+    <div class="sc-title">Trading Rules</div>
+    <div class="set-row"><div><div class="set-name">Discipline lockout</div><div class="set-desc">Locks after daily trade executes</div></div><button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+    <div class="set-row"><div><div class="set-name">A+ setups only</div><div class="set-desc">All confluences + 80% confidence required</div></div><button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+    <div class="set-row"><div><div class="set-name">Macro filter</div><div class="set-desc">Skip trades on high-impact news days</div></div><button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+    <div class="set-row"><div><div class="set-name">Auto risk sizing</div><div class="set-desc">Position size at 1% account risk</div></div><button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+  </div>
+  <div class="sec-card">
+    <div class="sc-title">Broker Connections</div>
+    <div class="broker-row"><div class="br-info"><div class="br-icon">📈</div><div><div class="br-name">Tradovate</div><div class="br-status">Connected via TradingView webhook</div></div></div><button class="conn-btn cb-conn">● Connected</button></div>
+    <div class="broker-row"><div class="br-info"><div class="br-icon">⚡</div><div><div class="br-name">Rithmic</div><div class="br-status">Not connected</div></div></div><button class="conn-btn cb-disc">Connect</button></div>
+    <div class="broker-row"><div class="br-info"><div class="br-icon">🥇</div><div><div class="br-name">OANDA (Gold)</div><div class="br-status">Not connected</div></div></div><button class="conn-btn cb-disc">Connect</button></div>
+  </div>
+  <div class="sec-card">
+    <div class="sc-title">Notifications</div>
+    <div class="set-row"><div><div class="set-name">Telegram alerts</div><div class="set-desc">Signal + execution notifications</div></div><button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+    <div class="set-row"><div><div class="set-name">Daily report email</div><div class="set-desc">EOD performance summary</div></div><button class="toggle off" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+  </div>
+</div>
+
+<script>
+// Starfield
+(function(){
+  var s=document.getElementById('stars');
+  for(var i=0;i<120;i++){
+    var el=document.createElement('div');
+    el.className='star';
+    var size=Math.random()*2.5+0.5;
+    el.style.cssText='width:'+size+'px;height:'+size+'px;left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;--dur:'+(2+Math.random()*4)+'s;--delay:'+(Math.random()*4)+'s;--min:'+(0.1+Math.random()*0.3)+';opacity:'+Math.random();
+    s.appendChild(el);
+  }
+})();
+
+var MODELS=[
+  {name:"London Killzone",dir:"Long or Short",dirColor:"#0096C7",conf:["Liquidity Sweep — BSL or SSL of London session H/L","IFVG (Inverted Fair Value Gap) created at the liquidity level","CISD (Change in State of Delivery) on 1m / 3m / 5m","Market Structure Shift + BOS on entry TF"],steps:["Identify London session H/L (07:00–10:00 UTC / 02:00–05:00 NY)","Wait for London high (BSL) or low (SSL) to be swept during NY open","Confirm reversal — candle closes back inside London session range","On entry TF: find first IFVG at or near the sweep level","Wait for CISD confirming delivery has shifted","Confirm BOS / MSS on entry TF","Enter at IFVG zone — target next opposite liquidity"],tags:["SSL/BSL swept","IFVG entry","CISD confirmed","MSS/BOS","Next liq target","3.2R"],sigDir:"Long NQ",sigDirClass:"sb-bull",cardClass:"sc-bull",autoClass:"eb-auto",entry:"21,720",sl:"21,614",tp:"22,070"},
+  {name:"Asia Killzone",dir:"Long or Short",dirColor:"#00E5FF",conf:["Liquidity Sweep — BSL or SSL of Asia session H/L","IFVG (Inverted Fair Value Gap) created at the liquidity level","CISD (Change in State of Delivery) on 1m / 3m / 5m","Market Structure Shift + BOS on entry TF"],steps:["Identify Asia session H/L (20:00–00:00 UTC / 15:00–19:00 NY prior day)","Wait for Asia high (BSL) or low (SSL) to be swept during NY open","Confirm reversal — candle closes back inside Asia session range","On entry TF: find first IFVG at or near the sweep level","Wait for CISD confirming delivery has shifted","Confirm BOS / MSS on entry TF","Enter at IFVG zone — target next opposite liquidity"],tags:["SSL swept","IFVG entry","CISD confirmed","MSS/BOS","Asia liq target","2.9R"],sigDir:"Long NQ",sigDirClass:"sb-bull",cardClass:"sc-bull",autoClass:"eb-auto",entry:"21,720",sl:"21,614",tp:"21,980"},
+  {name:"New Day Opening Gap",dir:"Long or Short",dirColor:"#BF5AF2",conf:["New Day Opening Gap (NDOG) present and marked on the chart","Liquidity Sweep — BSL or SSL of Asia OR London H/L","IFVG (Inverted Fair Value Gap) created at the liquidity level","CISD (Change in State of Delivery) on 1m / 3m / 5m","Market Structure Shift + BOS on entry TF"],steps:["Confirm NDOG exists — price gapped at today's open","Mark NDOG high, low, and equilibrium (50% midpoint)","Identify Asia and London session H/L","Wait for Asia OR London H/L to be swept (BSL or SSL)","Confirm reversal close back inside swept session range","Find first IFVG at the sweep level on entry TF","Wait for CISD + BOS/MSS, then enter — target NDOG equilibrium"],tags:["NDOG confirmed","BSL swept","IFVG entry","CISD confirmed","MSS/BOS","NDOG EQ target","2.5R"],sigDir:"Long NQ",sigDirClass:"sb-bull",cardClass:"sc-bull",autoClass:"eb-auto",entry:"21,720",sl:"21,610",tp:"21,920"},
+  {name:"PDH Bullish",dir:"Long only ⚠ Bigger risk",dirColor:"#39FF14",conf:["Liquidity Sweep — SSL of Asia OR London session low","IFVG (Inverted Fair Value Gap) created at the SSL level","CISD (Change in State of Delivery) — bullish shift on 1m / 3m / 5m","Market Structure Shift + Bullish BOS on entry TF"],steps:["Mark the Previous Day High (PDH) — this is the target","Identify Asia and London session lows","Wait for Asia OR London LOW to be swept (SSL)","Confirm bullish reversal — candle closes back above swept session low","Find first IFVG at the SSL sweep level on entry TF","Wait for CISD confirming bullish delivery shift","Confirm bullish BOS / MSS — enter long, target PDH"],tags:["SSL swept","IFVG entry","CISD bullish","Bullish MSS/BOS","PDH target","2:1 min"],sigDir:"Long NQ",sigDirClass:"sb-bull",cardClass:"sc-bull",autoClass:"eb-auto",entry:"21,720",sl:"21,590",tp:"22,140"},
+  {name:"PDL Bearish",dir:"Short only ⚠ Bigger risk",dirColor:"#FF0090",conf:["Liquidity Sweep — BSL of Asia OR London session high","IFVG (Inverted Fair Value Gap) created at the BSL level","CISD (Change in State of Delivery) — bearish shift on 1m / 3m / 5m","Market Structure Shift + Bearish BOS on entry TF"],steps:["Mark the Previous Day Low (PDL) — this is the target","Identify Asia and London session highs","Wait for Asia OR London HIGH to be swept (BSL)","Confirm bearish reversal — candle closes back below swept session high","Find first IFVG at the BSL sweep level on entry TF","Wait for CISD confirming bearish delivery shift","Confirm bearish BOS / MSS — enter short, target PDL"],tags:["BSL swept","IFVG entry","CISD bearish","Bearish MSS/BOS","PDL target","2:1 min"],sigDir:"Short NQ",sigDirClass:"sb-bear",cardClass:"sc-bear",autoClass:"eb-auto",entry:"21,980",sl:"22,090",tp:"21,580"}
+];
+
+var INST={
+  NQ:{label:"NQ1!",isGold:false,bias:"Bullish",conf:82,meta:"CPI miss · DXY weak · HTF OB respected",macro:[["CPI (MoM)","2.1% ↓","dn"],["DXY","103.4 ↓","dn"],["VIX","14.2 →","nt"],["Fed stance","Dovish ↑","up"]],liqTitle:"Liquidity Map · NQ1!",liq:'<div class="liq-row"><span class="liq-price dn">22,140</span><div class="liq-bw"><div class="liq-b lb-sell" style="width:85%"></div></div><span class="liq-type dn">BSL</span></div><div class="liq-row"><span class="liq-price dn">21,980</span><div class="liq-bw"><div class="liq-b lb-sell" style="width:60%"></div></div><span class="liq-type dn">EQH</span></div><div class="price-line"><span class="cur-price">● 21,847</span><div class="pl-bar"></div><span style="font-size:9px;color:var(--amber)">Current</span></div><div class="liq-row"><span class="liq-price up">21,720</span><div class="liq-bw"><div class="liq-b lb-buy" style="width:75%"></div></div><span class="liq-type up">SSL ✓</span></div><div class="liq-row"><span class="liq-price up">21,580</span><div class="liq-bw"><div class="liq-b lb-buy" style="width:45%"></div></div><span class="liq-type up">HTF OB</span></div>'},
+  ES:{label:"ES1!",isGold:false,bias:"Bullish",conf:77,meta:"DXY softening · SPX structure intact",macro:[["CPI (MoM)","2.1% ↓","dn"],["DXY","103.4 ↓","dn"],["PMI","51.2 →","nt"],["Risk tone","On ↑","up"]],liqTitle:"Liquidity Map · ES1!",liq:'<div class="liq-row"><span class="liq-price dn">5,340</span><div class="liq-bw"><div class="liq-b lb-sell" style="width:70%"></div></div><span class="liq-type dn">BSL</span></div><div class="liq-row"><span class="liq-price dn">5,295</span><div class="liq-bw"><div class="liq-b lb-sell" style="width:48%"></div></div><span class="liq-type dn">EQH</span></div><div class="price-line"><span class="cur-price">● 5,271</span><div class="pl-bar"></div><span style="font-size:9px;color:var(--amber)">Current</span></div><div class="liq-row"><span class="liq-price up">5,240</span><div class="liq-bw"><div class="liq-b lb-buy" style="width:80%"></div></div><span class="liq-type up">SSL ✓</span></div><div class="liq-row"><span class="liq-price up">5,210</span><div class="liq-bw"><div class="liq-b lb-buy" style="width:38%"></div></div><span class="liq-type up">HTF OB</span></div>'},
+  SPX:{label:"SPX",isGold:false,bias:"Bullish",conf:74,meta:"Macro tailwind · equities bid",macro:[["CPI (MoM)","2.1% ↓","dn"],["DXY","103.4 ↓","dn"],["VIX","14.2 →","nt"],["S&P trend","Up ↑","up"]],liqTitle:"Liquidity Map · SPX",liq:'<div class="liq-row"><span class="liq-price dn">5,338</span><div class="liq-bw"><div class="liq-b lb-sell" style="width:65%"></div></div><span class="liq-type dn">BSL</span></div><div class="liq-row"><span class="liq-price dn">5,292</span><div class="liq-bw"><div class="liq-b lb-sell" style="width:44%"></div></div><span class="liq-type dn">EQH</span></div><div class="price-line"><span class="cur-price">● 5,268</span><div class="pl-bar"></div><span style="font-size:9px;color:var(--amber)">Current</span></div><div class="liq-row"><span class="liq-price up">5,238</span><div class="liq-bw"><div class="liq-b lb-buy" style="width:72%"></div></div><span class="liq-type up">SSL ✓</span></div><div class="liq-row"><span class="liq-price up">5,208</span><div class="liq-bw"><div class="liq-b lb-buy" style="width:36%"></div></div><span class="liq-type up">HTF OB</span></div>'},
+  GOLD:{label:"GOLD (XAUUSD)",isGold:true,bias:"Bullish",conf:86,meta:"Real yields falling · DXY weak · safe haven bid",macro:[["Real yields","-0.4% ↓","up"],["DXY","103.4 ↓","up"],["CPI","2.1% ↑","up"],["Risk tone","Off ↑","up"]],liqTitle:"Liquidity Map · XAUUSD",liq:'<div class="liq-row"><span class="liq-price" style="color:var(--amber)">2,365</span><div class="liq-bw"><div class="liq-b lb-gsell" style="width:80%"></div></div><span class="liq-type dn">BSL</span></div><div class="liq-row"><span class="liq-price" style="color:var(--amber)">2,341</span><div class="liq-bw"><div class="liq-b lb-gsell" style="width:55%"></div></div><span class="liq-type dn">EQH</span></div><div class="price-line"><span class="cur-price">● 2,318</span><div class="pl-bar"></div><span style="font-size:9px;color:var(--amber)">Current</span></div><div class="liq-row"><span class="liq-price" style="color:var(--amber)">2,296</span><div class="liq-bw"><div class="liq-b lb-gbuy" style="width:78%"></div></div><span class="liq-type up">SSL ✓</span></div><div class="liq-row"><span class="liq-price" style="color:var(--amber)">2,278</span><div class="liq-bw"><div class="liq-b lb-gbuy" style="width:40%"></div></div><span class="liq-type up">HTF OB</span></div>'}
+};
+
+var currentInst="NQ",currentTF="1m",selectedModel=0;
+function selInst(el,inst){document.querySelectorAll('[onclick*="selInst"]').forEach(function(p){p.classList.remove('pi','pg');});currentInst=inst;el.classList.add(inst==="GOLD"?"pg":"pi");updateDash();}
+function selTF(el,tf){document.querySelectorAll('[onclick*="selTF"]').forEach(function(p){p.classList.remove('pt');});el.classList.add('pt');currentTF=tf;updateSignal();}
+function selModel(el,idx){var isGold=currentInst==="GOLD";document.querySelectorAll('.model-card').forEach(function(c){c.classList.remove('sel','sel-gold');c.querySelector('.mc-check').textContent='';});el.classList.add(isGold?'sel-gold':'sel');el.querySelector('.mc-check').textContent='✓';selectedModel=idx;updateConf();updateSignal();}
+function updateConf(){var m=MODELS[selectedModel];document.getElementById('conf-title').textContent='Required Confluences — '+m.name;var cl=document.getElementById('conf-list');cl.innerHTML=m.conf.map(function(c){return '<div class="conf-item"><div class="conf-check ticked">✓</div><div class="conf-text">'+c+'</div></div>';}).join('');var sl=document.getElementById('step-list');sl.innerHTML='<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.2);margin-bottom:6px;font-family:var(--head)">Entry Steps In Order</div>'+m.steps.map(function(s,i){return '<div class="step-item"><span class="step-num">'+(i+1)+'.</span><span>'+s+'</span></div>';}).join('');}
+function updateSignal(){var m=MODELS[selectedModel];var d=INST[currentInst];document.getElementById('sig-mdl').textContent=m.name+' · '+currentTF;document.getElementById('lock-mdl').textContent=m.name+' · '+currentTF;var tags=document.getElementById('sig-tags');var isGold=currentInst==="GOLD";tags.innerHTML=m.tags.map(function(t,i){var cls=i<4?(isGold?'stag-hl-gold':'stag-hl'):'stag';return '<span class="stag '+cls+'">'+t+'</span>';}).join('');var sc=document.getElementById('sig-card');sc.className='sig-card '+(m.dir.indexOf('Short')===0?'sc-bear':'sc-bull');var sd=document.getElementById('sig-dir');sd.textContent=(m.dir.indexOf('Short')===0?'Short ':'Long ')+d.label;sd.className='sb '+(m.dir.indexOf('Short')===0?'sb-bear':'sb-bull');document.getElementById('exec-auto').className='exec-btn '+(isGold?'eb-auto-gold':'eb-auto');document.getElementById('sig-entry').textContent=m.entry;document.getElementById('sig-sl').textContent=m.sl;document.getElementById('sig-tp').textContent=m.tp;document.getElementById('lock-inst').textContent=(m.dir.indexOf('Short')===0?'Short ':'Long ')+d.label;document.getElementById('lock-entry').textContent=m.entry;}
+function updateDash(){var d=INST[currentInst];document.getElementById('dash-title').textContent='Today\'s Setup · '+d.label;document.getElementById('bias-text').textContent=d.bias;document.getElementById('bias-text').className='bias-text '+(d.bias==='Bullish'?'bt-bull':'bt-bear');document.getElementById('bias-arrow').textContent=d.bias==='Bullish'?'↑':'↓';document.getElementById('bias-meta').textContent=d.meta;document.getElementById('conf-fill').style.width=d.conf+'%';document.getElementById('conf-fill').style.background=d.isGold?'linear-gradient(90deg,#D4A843,#F5A623)':'linear-gradient(90deg,var(--p500),var(--cyan))';document.getElementById('conf-pct').textContent=d.conf+'%';document.getElementById('macro-lbl').textContent=d.isGold?'Gold Drivers':'Macro Fundamentals';document.getElementById('macro-list').innerHTML=d.macro.map(function(r){return '<div class="macro-item"><span class="macro-nm">'+r[0]+'</span><span class="macro-vl '+r[2]+'">'+r[1]+'</span></div>';}).join('');document.getElementById('liq-title').textContent=d.liqTitle;document.getElementById('liq-ladder').innerHTML=d.liq;var isGold=d.isGold;document.querySelectorAll('.model-card').forEach(function(c,i){c.classList.remove('sel','sel-gold');c.querySelector('.mc-check').textContent='';if(i===selectedModel){c.classList.add(isGold?'sel-gold':'sel');c.querySelector('.mc-check').textContent='✓';}});updateSignal();}
+function executeTrade(){show('lockout');}
+function show(s){document.querySelectorAll('.screen').forEach(function(el){el.classList.remove('active');});document.querySelectorAll('.nav-tab').forEach(function(el){el.classList.remove('active');});document.getElementById('screen-'+s).classList.add('active');var map={landing:0,dashboard:1,lockout:2,account:3};if(map[s]!==undefined)document.querySelectorAll('.nav-tab')[map[s]].classList.add('active');}
+function updateCountdown(){var now=new Date(),tom=new Date(now);tom.setDate(now.getDate()+1);tom.setHours(2,0,0,0);var diff=tom-now;var h=String(Math.floor(diff/3600000)).padStart(2,'0');var m=String(Math.floor((diff%3600000)/60000)).padStart(2,'0');var sec=String(Math.floor((diff%60000)/1000)).padStart(2,'0');var el=document.getElementById('countdown');if(el)el.textContent=h+':'+m+':'+sec;}
+updateConf();updateCountdown();setInterval(updateCountdown,1000);
+</script>
+</body>
+</html>
