@@ -366,7 +366,6 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
     <button class="nav-tab" onclick="show('premarket')">Pre-Market</button>
     <button class="nav-tab" onclick="show('dashboard')">Dashboard</button>
     <button class="nav-tab" onclick="show('progress')">Progress</button>
-    <button class="nav-tab" onclick="show('lockout')">Lockout</button>
     <button class="nav-tab" onclick="show('faq')">FAQ</button>
     <button class="nav-tab" onclick="show('legal')">Legal</button>
     <button class="nav-tab" onclick="show('account')">Account</button>
@@ -960,7 +959,7 @@ function toggleFaq(el){var item=el.parentElement;item.classList.toggle('open');}
 function showLegal(t){document.querySelectorAll('.legal-tab').forEach(function(b){b.classList.remove('active');});document.querySelectorAll('.legal-doc').forEach(function(d){d.classList.remove('active');});event.target.classList.add('active');document.getElementById('legal-'+t).classList.add('active');}
 
 // Nav
-function show(s){document.querySelectorAll('.screen').forEach(function(el){el.classList.remove('active');});document.querySelectorAll('.nav-tab').forEach(function(el){el.classList.remove('active');});document.getElementById('screen-'+s).classList.add('active');var map={landing:0,premarket:1,dashboard:2,progress:3,lockout:4,faq:5,legal:6,account:7};if(map[s]!==undefined)document.querySelectorAll('.nav-tab')[map[s]].classList.add('active');}
+function show(s){document.querySelectorAll('.screen').forEach(function(el){el.classList.remove('active');});document.querySelectorAll('.nav-tab').forEach(function(el){el.classList.remove('active');});document.getElementById('screen-'+s).classList.add('active');var map={landing:0,premarket:1,dashboard:2,progress:3,faq:4,legal:5,account:6};if(map[s]!==undefined)document.querySelectorAll('.nav-tab')[map[s]].classList.add('active');}
 
 // Countdown
 function updateCountdown(){var now=new Date(),tom=new Date(now);tom.setDate(now.getDate()+1);tom.setHours(2,0,0,0);var diff=tom-now;var h=String(Math.floor(diff/3600000)).padStart(2,'0');var m=String(Math.floor((diff%3600000)/60000)).padStart(2,'0');var sec=String(Math.floor((diff%60000)/1000)).padStart(2,'0');var el=document.getElementById('countdown');if(el)el.textContent=h+':'+m+':'+sec;}
