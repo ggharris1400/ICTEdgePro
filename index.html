@@ -273,6 +273,9 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
 @keyframes sparkRise{0%{opacity:.9;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(calc(var(--sp-rise,-18px))) scale(0) translateX(var(--sp-x,0px))}}
 .streak-days{display:flex;gap:6px;justify-content:center;margin-top:8px}
 .day-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--head);border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.25);transition:all .3s;cursor:pointer;position:relative}
+.chart-tooltip{position:absolute;background:rgba(13,2,37,0.97);border-radius:8px;padding:7px 11px;white-space:nowrap;pointer-events:none;z-index:20;transform:translateX(-50%)}
+.chart-tooltip .ct-pnl{display:block;font-size:11px;font-weight:700;font-family:var(--head);margin-bottom:2px}
+.chart-tooltip .ct-meta{display:block;font-size:9px;color:rgba(255,255,255,0.4)}
 .streak-tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(13,2,37,0.97);border:1px solid rgba(191,90,242,0.4);border-radius:8px;padding:7px 10px;white-space:nowrap;pointer-events:none;z-index:10;text-align:center}
 .streak-tooltip .stt-pnl{font-size:11px;font-weight:700;font-family:var(--head);display:block;margin-bottom:2px}
 .streak-tooltip .stt-meta{font-size:9px;color:rgba(255,255,255,0.4);display:block}
@@ -485,11 +488,13 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
     <div class="dash-title" id="dash-title">Today's Setup</div>
     <div class="market-status"><div class="dot green"></div><span id="mkt-lbl">NY Open · 09:31 EST</span></div>
   </div>
-  <div class="equity-card">
+  <div class="equity-card" style="position:relative">
     <div class="equity-header">
       <div class="equity-title">Equity Curve — Last 18 Trades</div>
       <div class="equity-pnl">+£4,500 (+31R)</div>
     </div>
+    <div style="position:relative">
+    <div id="eq-tooltip" class="chart-tooltip" style="display:none"></div>
     <svg id="equity-svg" viewBox="0 0 340 100" preserveAspectRatio="none">
       <defs>
         <linearGradient id="equityGrad" x1="0" y1="0" x2="0" y2="1">
@@ -512,12 +517,6 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
       <line id="eq-crosshair" x1="0" y1="0" x2="0" y2="100" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="3,3" display="none"/>
       <!-- Hover dot -->
       <circle id="eq-hover-dot" r="5" fill="var(--cyan)" stroke="var(--void)" stroke-width="2" display="none" style="filter:drop-shadow(0 0 6px var(--cyan))"/>
-      <!-- Tooltip group -->
-      <g id="eq-tooltip" display="none">
-        <rect id="eq-tt-bg" rx="5" ry="5" height="36" fill="rgba(13,2,37,0.95)" stroke="rgba(0,229,255,0.35)" stroke-width="1"/>
-        <text id="eq-tt-profit" y="14" font-size="9" font-weight="700" font-family="Orbitron,sans-serif" fill="var(--cyan)"></text>
-        <text id="eq-tt-trade" y="28" font-size="8" font-family="Space Grotesk,sans-serif" fill="rgba(255,255,255,0.45)"></text>
-      </g>
       <!-- Invisible hit areas at each data point -->
       <g id="eq-hits" fill="transparent">
         <circle cx="0"   cy="95"  r="12" class="eq-pt" data-trade="1"  data-pnl="-£120"  data-r="-0.8R"/>
@@ -540,6 +539,7 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
         <circle cx="340" cy="2"   r="12" class="eq-pt" data-trade="18" data-pnl="+£4,500" data-r="+31R"/>
       </g>
     </svg>
+    </div>
   </div>
   <!-- TradingView Live Chart -->
   <div class="tv-card">
@@ -602,8 +602,10 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
 
 <!-- ══ PROGRESS ══ -->
 <div id="screen-progress" class="screen progress-screen">
-  <div class="equity-card">
+  <div class="equity-card" style="position:relative">
     <div class="equity-header"><div class="equity-title">Equity Curve — 18 Trades</div><div class="equity-pnl">+£4,500 (+31R)</div></div>
+    <div style="position:relative">
+    <div id="pg-tooltip" class="chart-tooltip" style="display:none"></div>
     <svg id="prog-svg" viewBox="0 0 340 100" style="width:100%;height:100px;overflow:visible" preserveAspectRatio="none">
       <defs><linearGradient id="eg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#BF5AF2" stop-opacity=".5"/><stop offset="100%" stop-color="#BF5AF2" stop-opacity="0"/></linearGradient></defs>
       <path fill="url(#eg2)" opacity=".4" d="M0,95 L20,100 L40,91 L60,93 L80,79 L100,81 L120,72 L140,76 L160,59 L180,55 L200,58 L220,44 L240,46 L260,31 L280,33 L300,16 L320,18 L340,2 L340,100 L0,100 Z"/>
@@ -613,12 +615,6 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
       <line id="pg-crosshair" x1="0" y1="0" x2="0" y2="100" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="3,3" display="none"/>
       <!-- Hover dot -->
       <circle id="pg-hover-dot" r="5" fill="var(--neon)" stroke="var(--void)" stroke-width="2" display="none" style="filter:drop-shadow(0 0 6px var(--neon))"/>
-      <!-- Tooltip -->
-      <g id="pg-tooltip" display="none">
-        <rect id="pg-tt-bg" rx="5" ry="5" height="36" fill="rgba(13,2,37,0.95)" stroke="rgba(191,90,242,0.4)" stroke-width="1"/>
-        <text id="pg-tt-profit" y="14" font-size="9" font-weight="700" font-family="Orbitron,sans-serif" fill="var(--neon)"></text>
-        <text id="pg-tt-trade" y="28" font-size="8" font-family="Space Grotesk,sans-serif" fill="rgba(255,255,255,0.45)"></text>
-      </g>
       <!-- Hit areas -->
       <g fill="transparent">
         <circle cx="0"   cy="95"  r="12" class="pg-pt" data-trade="1"  data-pnl="-£120"  data-r="-0.8R"/>
@@ -641,6 +637,7 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
         <circle cx="340" cy="2"   r="12" class="pg-pt" data-trade="18" data-pnl="+£4,500" data-r="+31R"/>
       </g>
     </svg>
+    </div>
   </div>
   <div class="streak-card">
     <div class="streak-title">Win Streak</div>
@@ -954,15 +951,13 @@ function updateConf(){var m=MODELS[selectedModel];document.getElementById('conf-
 function updateSignal(){var m=MODELS[selectedModel];var d=INST[currentInst];document.getElementById('sig-mdl').textContent=m.name+' · '+currentTF;document.getElementById('lock-mdl').textContent=m.name+' · '+currentTF;var isGold=currentInst==="GOLD";var tags=document.getElementById('sig-tags');tags.innerHTML=m.tags.map(function(t,i){var cls=i<4?(isGold?'stag-hl-gold':'stag-hl'):'stag';return '<span class="stag '+cls+'">'+t+'</span>';}).join('');var sc=document.getElementById('sig-card');sc.className='sig-card '+(m.dir.indexOf('Short')===0?'sc-bear':'sc-bull');var sd=document.getElementById('sig-dir');sd.textContent=(m.dir.indexOf('Short')===0?'Short ':'Long ')+d.label;sd.className='sb '+(m.dir.indexOf('Short')===0?'sb-bear':'sb-bull');document.getElementById('exec-auto').className='exec-btn '+(isGold?'eb-auto-gold':'eb-auto');document.getElementById('sig-entry').textContent=m.entry;document.getElementById('sig-sl').textContent=m.sl;document.getElementById('sig-tp').textContent=m.tp;document.getElementById('lock-inst').textContent=(m.dir.indexOf('Short')===0?'Short ':'Long ')+d.label;document.getElementById('lock-entry').textContent=m.entry;}
 function updateDash(){var d=INST[currentInst];document.getElementById('dash-title').textContent='Today\'s Setup · '+d.label;document.getElementById('bias-text').textContent=d.bias;document.getElementById('bias-text').className='bias-text '+(d.bias==='Bullish'?'bt-bull':'bt-bear');document.getElementById('bias-arrow').textContent=d.bias==='Bullish'?'↑':'↓';document.getElementById('bias-meta').textContent=d.meta;document.getElementById('conf-fill').style.width=d.conf+'%';document.getElementById('conf-fill').style.background=d.isGold?'linear-gradient(90deg,#D4A843,#F5A623)':'linear-gradient(90deg,var(--p500),var(--cyan))';document.getElementById('conf-pct').textContent=d.conf+'%';document.getElementById('macro-lbl').textContent=d.isGold?'Gold Drivers':'Macro Fundamentals';document.getElementById('macro-list').innerHTML=d.macro.map(function(r){return '<div class="macro-item"><span class="macro-nm">'+r[0]+'</span><span class="macro-vl '+r[2]+'">'+r[1]+'</span></div>';}).join('');document.getElementById('liq-title').textContent=d.liqTitle;document.getElementById('liq-ladder').innerHTML=d.liq;var isGold=d.isGold;document.querySelectorAll('.model-card').forEach(function(c,i){c.classList.remove('sel','sel-gold');c.querySelector('.mc-check').textContent='';if(i===selectedModel){c.classList.add(isGold?'sel-gold':'sel');c.querySelector('.mc-check').textContent='✓';}});updateSignal();}
 
-// Equity chart hover tooltip
-(function(){
-  var pts=document.querySelectorAll('.eq-pt');
-  var crosshair=document.getElementById('eq-crosshair');
-  var hoverDot=document.getElementById('eq-hover-dot');
-  var tooltip=document.getElementById('eq-tooltip');
-  var ttBg=document.getElementById('eq-tt-bg');
-  var ttProfit=document.getElementById('eq-tt-profit');
-  var ttTrade=document.getElementById('eq-tt-trade');
+// Shared chart hover helper
+function attachChartHover(ptClass,crosshairId,dotId,tooltipId,svgId,dotColor){
+  var pts=document.querySelectorAll('.'+ptClass);
+  var crosshair=document.getElementById(crosshairId);
+  var hoverDot=document.getElementById(dotId);
+  var tooltip=document.getElementById(tooltipId);
+  var svg=document.getElementById(svgId);
   pts.forEach(function(pt){
     pt.addEventListener('mouseenter',function(){
       var cx=parseFloat(pt.getAttribute('cx'));
@@ -971,78 +966,41 @@ function updateDash(){var d=INST[currentInst];document.getElementById('dash-titl
       var r=pt.getAttribute('data-r');
       var trade=pt.getAttribute('data-trade');
       var isPos=pnl.indexOf('+')===0;
-      // crosshair
+      var color=isPos?dotColor:'var(--pink)';
+      // SVG crosshair + dot
       crosshair.setAttribute('x1',cx);crosshair.setAttribute('x2',cx);
       crosshair.removeAttribute('display');
-      // dot
       hoverDot.setAttribute('cx',cx);hoverDot.setAttribute('cy',cy);
-      hoverDot.setAttribute('fill',isPos?'var(--cyan)':'var(--pink)');
+      hoverDot.setAttribute('fill',color);
       hoverDot.removeAttribute('display');
-      // tooltip text
-      ttProfit.textContent=pnl;
-      ttProfit.setAttribute('fill',isPos?'var(--cyan)':'var(--pink)');
-      ttTrade.textContent='Trade '+trade+' · '+r;
-      // measure text width to size bg
-      var maxLen=Math.max(pnl.length,('Trade '+trade+' · '+r).length);
-      var w=Math.max(72,maxLen*6+16);
-      ttBg.setAttribute('width',w);
-      // position tooltip — flip left if near right edge
-      var tx=cx+8;
-      if(cx>260) tx=cx-w-8;
-      var ty=Math.max(2,cy-42);
-      ttBg.setAttribute('x',tx);ttBg.setAttribute('y',ty);
-      ttProfit.setAttribute('x',tx+8);ttProfit.setAttribute('y',ty+14);
-      ttTrade.setAttribute('x',tx+8);ttTrade.setAttribute('y',ty+28);
-      tooltip.removeAttribute('display');
+      // HTML tooltip — convert SVG viewBox coords to % of rendered size
+      var svgRect=svg.getBoundingClientRect();
+      var parentRect=svg.parentElement.getBoundingClientRect();
+      var pctX=cx/340;
+      var pctY=cy/100;
+      var leftPx=(pctX*svgRect.width);
+      var topPx=(pctY*svgRect.height)-52;
+      var borderColor=isPos?color:'var(--pink)';
+      tooltip.innerHTML='<span class="ct-pnl" style="color:'+color+'">'+pnl+'</span><span class="ct-meta">Trade '+trade+' · '+r+'</span>';
+      tooltip.style.borderColor=borderColor;
+      tooltip.style.border='1px solid '+borderColor;
+      tooltip.style.left=leftPx+'px';
+      tooltip.style.top=Math.max(0,topPx)+'px';
+      tooltip.style.display='block';
     });
     pt.addEventListener('mouseleave',function(){
       crosshair.setAttribute('display','none');
       hoverDot.setAttribute('display','none');
-      tooltip.setAttribute('display','none');
+      tooltip.style.display='none';
     });
   });
-})();
+}
+
+// Equity chart hover tooltip
+attachChartHover('eq-pt','eq-crosshair','eq-hover-dot','eq-tooltip','equity-svg','var(--cyan)');
 
 // Progress equity chart hover
-(function(){
-  var pts=document.querySelectorAll('.pg-pt');
-  var crosshair=document.getElementById('pg-crosshair');
-  var hoverDot=document.getElementById('pg-hover-dot');
-  var tooltip=document.getElementById('pg-tooltip');
-  var ttBg=document.getElementById('pg-tt-bg');
-  var ttProfit=document.getElementById('pg-tt-profit');
-  var ttTrade=document.getElementById('pg-tt-trade');
-  pts.forEach(function(pt){
-    pt.addEventListener('mouseenter',function(){
-      var cx=parseFloat(pt.getAttribute('cx'));
-      var cy=parseFloat(pt.getAttribute('cy'));
-      var pnl=pt.getAttribute('data-pnl');
-      var r=pt.getAttribute('data-r');
-      var trade=pt.getAttribute('data-trade');
-      var isPos=pnl.indexOf('+')===0;
-      crosshair.setAttribute('x1',cx);crosshair.setAttribute('x2',cx);
-      crosshair.removeAttribute('display');
-      hoverDot.setAttribute('cx',cx);hoverDot.setAttribute('cy',cy);
-      hoverDot.setAttribute('fill',isPos?'var(--neon)':'var(--pink)');
-      hoverDot.removeAttribute('display');
-      ttProfit.textContent=pnl;
-      ttProfit.setAttribute('fill',isPos?'var(--neon)':'var(--pink)');
-      ttTrade.textContent='Trade '+trade+' · '+r;
-      var w=Math.max(72,Math.max(pnl.length,('Trade '+trade+' · '+r).length)*6+16);
-      var tx=cx+8;if(cx>260) tx=cx-w-8;
-      var ty=Math.max(2,cy-42);
-      ttBg.setAttribute('width',w);ttBg.setAttribute('x',tx);ttBg.setAttribute('y',ty);
-      ttProfit.setAttribute('x',tx+8);ttProfit.setAttribute('y',ty+14);
-      ttTrade.setAttribute('x',tx+8);ttTrade.setAttribute('y',ty+28);
-      tooltip.removeAttribute('display');
-    });
-    pt.addEventListener('mouseleave',function(){
-      crosshair.setAttribute('display','none');
-      hoverDot.setAttribute('display','none');
-      tooltip.setAttribute('display','none');
-    });
-  });
-})();
+attachChartHover('pg-pt','pg-crosshair','pg-hover-dot','pg-tooltip','prog-svg','var(--neon)');
 
 // Fire streak bar
 (function(){
