@@ -258,6 +258,19 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
 .streak-card{background:rgba(13,2,37,.8);border:1px solid rgba(191,90,242,.12);border-radius:12px;padding:14px;margin-bottom:10px;text-align:center}
 .streak-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.22);margin-bottom:8px;font-family:var(--head)}
 .streak-fire{font-family:var(--fun);font-size:22px;font-weight:900;color:#FF6B00;text-shadow:0 0 20px #FF6B00,0 0 40px rgba(255,107,0,.4);margin-bottom:10px;animation:tierFloat 2s ease-in-out infinite}
+/* STREAK FIRE BAR */
+.streak-bar-wrap{margin:0 0 12px;padding:0 2px}
+.streak-bar-track{height:var(--bar-h,12px);background:rgba(255,255,255,0.05);border-radius:20px;overflow:visible;position:relative;transition:height .6s ease;border:1px solid rgba(255,100,0,0.1)}
+.streak-bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#8B0000,#CC2200,#FF4500,#FF6B00,#FFA500,#FFD700);background-size:300% 100%;animation:fireFlow 1.2s linear infinite;position:relative;transition:width 1s cubic-bezier(0.34,1.4,0.64,1);box-shadow:0 0 var(--bar-glow,6px) var(--bar-glow,6px) rgba(255,80,0,0.35),0 0 calc(var(--bar-glow,6px)*2) rgba(255,150,0,0.2);min-width:0}
+.streak-bar-fill::after{content:'🔥';position:absolute;right:-14px;top:50%;transform:translateY(-50%);font-size:var(--flame-sz,16px);line-height:1;animation:flamePop .5s ease-in-out infinite alternate;filter:drop-shadow(0 0 var(--flame-glow,4px) #FF6B00);transition:font-size .6s ease}
+.streak-bar-sparks{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.streak-spark{position:absolute;border-radius:50%;animation:sparkRise var(--sp-dur,1s) ease-out var(--sp-delay,0s) infinite;opacity:0}
+.streak-bar-meta{font-size:8px;font-family:var(--head);color:rgba(255,255,255,0.2);letter-spacing:1px;margin-top:5px;text-align:right}
+.streak-bar-wrap.reset .streak-bar-fill{background:linear-gradient(90deg,rgba(255,0,90,.3),rgba(255,0,90,.1));box-shadow:0 0 6px rgba(255,0,90,0.2);animation:none}
+.streak-bar-wrap.reset .streak-bar-fill::after{content:'💔'}
+@keyframes fireFlow{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+@keyframes flamePop{from{transform:translateY(-50%) scale(1) rotate(-5deg)}to{transform:translateY(-65%) scale(1.25) rotate(5deg)}}
+@keyframes sparkRise{0%{opacity:.9;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(calc(var(--sp-rise,-18px))) scale(0) translateX(var(--sp-x,0px))}}
 .streak-days{display:flex;gap:6px;justify-content:center;margin-top:8px}
 .day-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--head);border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.25);transition:all .3s;cursor:pointer;position:relative}
 .streak-tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(13,2,37,0.97);border:1px solid rgba(191,90,242,0.4);border-radius:8px;padding:7px 10px;white-space:nowrap;pointer-events:none;z-index:10;text-align:center}
@@ -631,7 +644,14 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
   </div>
   <div class="streak-card">
     <div class="streak-title">Win Streak</div>
-    <div class="streak-fire">🔥 7-Day Streak!</div>
+    <div class="streak-fire" id="streak-label">🔥 5-Day Streak!</div>
+    <div class="streak-bar-wrap">
+      <div class="streak-bar-track" id="streak-bar-track">
+        <div class="streak-bar-fill" id="streak-bar-fill"></div>
+        <div class="streak-bar-sparks" id="streak-bar-sparks"></div>
+      </div>
+      <div class="streak-bar-meta"><span id="streak-bar-count">0</span> / 10 day goal</div>
+    </div>
     <div class="streak-days" style="position:relative">
       <div class="day-dot win"  data-day="Mon" data-pnl="+£380" data-r="+2.5R">M</div>
       <div class="day-dot win"  data-day="Tue" data-pnl="+£540" data-r="+3.6R">T</div>
@@ -1022,6 +1042,80 @@ function updateDash(){var d=INST[currentInst];document.getElementById('dash-titl
       tooltip.setAttribute('display','none');
     });
   });
+})();
+
+// Fire streak bar
+(function(){
+  var MAX=10;
+  var dots=Array.from(document.querySelectorAll('.streak-days .day-dot'));
+  // count consecutive wins backwards, skip today
+  var i=dots.length-1;
+  if(dots[i]&&dots[i].classList.contains('today')) i--;
+  var streak=0;
+  while(i>=0){
+    if(dots[i].classList.contains('win')){streak++;i--;}
+    else break;
+  }
+  var isReset=streak===0;
+  var pct=Math.min(100,(streak/MAX)*100);
+
+  // label
+  var label=document.getElementById('streak-label');
+  if(label){
+    if(isReset){label.textContent='❌ Streak Reset';label.style.color='var(--pink)';label.style.textShadow='0 0 20px var(--pink)';}
+    else{label.textContent='🔥 '+streak+'-Day Streak!';}
+  }
+
+  // bar count
+  var countEl=document.getElementById('streak-bar-count');
+  if(countEl) countEl.textContent=streak;
+
+  // sizes scale with pct
+  var barH=Math.round(10+pct*0.1);          // 10px → 20px
+  var barGlow=Math.round(4+pct*0.18);        // 4px → 22px
+  var flameSize=Math.round(14+pct*0.22);     // 14px → 36px
+  var flameGlow=Math.round(3+pct*0.17);      // 3px → 20px
+
+  var wrap=document.getElementById('streak-bar-fill');
+  var track=document.getElementById('streak-bar-track');
+  var wrapEl=document.querySelector('.streak-bar-wrap');
+
+  if(track) track.style.setProperty('--bar-h',barH+'px');
+  if(wrap){
+    if(isReset){
+      wrapEl.classList.add('reset');
+      wrap.style.width='100%';
+      wrap.style.setProperty('--flame-sz','16px');
+      wrap.style.setProperty('--flame-glow','3px');
+      wrap.style.setProperty('--bar-glow','3px');
+    } else {
+      wrap.style.width=pct+'%';
+      wrap.style.setProperty('--flame-sz',flameSize+'px');
+      wrap.style.setProperty('--flame-glow',flameGlow+'px');
+      wrap.style.setProperty('--bar-glow',barGlow+'px');
+    }
+  }
+
+  // sparks — more sparks at higher pct
+  if(!isReset&&pct>0){
+    var sparks=document.getElementById('streak-bar-sparks');
+    var count=Math.round(3+pct*0.12);
+    var colors=['#FFD700','#FF6B00','#FF4500','#FFA500','#FFEC8B'];
+    for(var s=0;s<count;s++){
+      var sp=document.createElement('div');
+      sp.className='streak-spark';
+      var sz=Math.random()*3+2;
+      var col=colors[Math.floor(Math.random()*colors.length)];
+      sp.style.cssText='width:'+sz+'px;height:'+sz+'px;background:'+col+';'
+        +'left:'+Math.random()*pct+'%;bottom:0;'
+        +'--sp-dur:'+(0.7+Math.random()*0.8)+'s;'
+        +'--sp-delay:'+Math.random()*1.2+'s;'
+        +'--sp-rise:'+(-12-Math.random()*barH*1.5)+'px;'
+        +'--sp-x:'+(Math.random()*10-5)+'px;'
+        +'box-shadow:0 0 '+(sz+1)+'px '+col;
+      sparks.appendChild(sp);
+    }
+  }
 })();
 
 // Streak day dot hover
