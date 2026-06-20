@@ -998,7 +998,7 @@ function buildDropdown(card,idx){
     item.addEventListener('click',function(e){
       e.stopPropagation();
       var i=parseInt(item.getAttribute('data-idx'));
-      modelCheckState[idx][i]=modelCheckState[idx][i]==='done'?'none':'done';
+      if(modelCheckState[idx][i]!=='done') modelCheckState[idx][i]='done';
       buildDropdown(card,idx);
     });
   });
