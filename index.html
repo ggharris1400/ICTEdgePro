@@ -181,7 +181,14 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
 .mcd-forming .mcd-icon{color:var(--amber);animation:spin 1.8s linear infinite}
 .mcd-forming .mcd-text{color:var(--amber)}
 .mcd-none .mcd-icon{color:rgba(255,255,255,.18)}
+.mcd-done{cursor:pointer}.mcd-done:hover .mcd-text{color:rgba(255,255,255,.5)}.mcd-done:hover .mcd-icon{opacity:.6}
+.mcd-none:hover .mcd-icon{color:rgba(57,255,20,.5)}.mcd-none:hover .mcd-text{color:rgba(255,255,255,.7)}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.take-trade-btn{width:100%;margin-top:10px;padding:10px;border-radius:8px;border:none;font-family:var(--head);font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .25s}
+.tt-locked{background:rgba(255,255,255,.04);color:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.08);cursor:not-allowed}
+.tt-unlocked{background:linear-gradient(135deg,var(--p500),var(--cyan));color:#fff;box-shadow:0 0 20px rgba(0,229,255,.35),0 0 40px rgba(124,58,237,.2);animation:ttPulse 2s ease-in-out infinite;cursor:pointer}
+.tt-unlocked:hover{transform:scale(1.02);box-shadow:0 0 30px rgba(0,229,255,.5),0 0 60px rgba(124,58,237,.3)}
+@keyframes ttPulse{0%,100%{box-shadow:0 0 20px rgba(0,229,255,.35),0 0 40px rgba(124,58,237,.2)}50%{box-shadow:0 0 30px rgba(0,229,255,.6),0 0 60px rgba(124,58,237,.4)}}
 .mc-name{font-size:10px;font-weight:700;margin-bottom:2px;padding-right:18px;font-family:var(--head);letter-spacing:.3px}
 .mc-dir{font-size:10px;font-weight:600;margin-bottom:4px}
 .mc-desc{font-size:9px;color:rgba(255,255,255,.32);line-height:1.45;margin-bottom:6px}
@@ -964,10 +971,43 @@ var INST={
 var currentInst="NQ",currentTF="1m",selectedModel=0;
 function selInst(el,inst){document.querySelectorAll('[onclick*="selInst"]').forEach(function(p){p.classList.remove('pi','pg');});currentInst=inst;el.classList.add(inst==="GOLD"?"pg":"pi");updateDash();initTVChart(inst);}
 function selTF(el,tf){document.querySelectorAll('[onclick*="selTF"]').forEach(function(p){p.classList.remove('pt');});el.classList.add('pt');currentTF=tf;updateSignal();initTVChart(currentInst);}
+// live check state per model (copy of initial so user can toggle)
+var modelCheckState=MODELS.map(function(m){return m.checks.map(function(c){return c.state;});});
+
+function buildDropdown(card,idx){
+  var old=card.querySelector('.mc-dropdown');if(old) old.remove();
+  var m=MODELS[idx];
+  var states=modelCheckState[idx];
+  var total=states.length;
+  var confirmed=states.filter(function(s){return s==='done';}).length;
+  var allDone=confirmed===total;
+  var drop=document.createElement('div');
+  drop.className='mc-dropdown';
+  var scoreClass=allDone?'score-full':confirmed>0?'score-part':'score-none';
+  var rows=m.checks.map(function(c,i){
+    var s=states[i];
+    var icon=s==='done'?'✓':'○';
+    return '<div class="mc-drop-item mcd-'+s+'" data-idx="'+i+'" style="cursor:pointer"><span class="mcd-icon">'+icon+'</span><span class="mcd-text">'+c.text+'</span></div>';
+  }).join('');
+  var btn=allDone
+    ?'<button class="take-trade-btn tt-unlocked" onclick="executeTrade()">⚡ Take Trade</button>'
+    :'<button class="take-trade-btn tt-locked" disabled>🔒 Take Trade — '+confirmed+'/'+total+' required</button>';
+  drop.innerHTML='<div class="mc-drop-hdr"><span class="mc-drop-title">Confluence Checklist</span><span class="mc-drop-score '+scoreClass+'">'+confirmed+'/'+total+'</span></div>'+rows+btn;
+  // wire up toggle clicks on items
+  drop.querySelectorAll('.mc-drop-item').forEach(function(item){
+    item.addEventListener('click',function(e){
+      e.stopPropagation();
+      var i=parseInt(item.getAttribute('data-idx'));
+      modelCheckState[idx][i]=modelCheckState[idx][i]==='done'?'none':'done';
+      buildDropdown(card,idx);
+    });
+  });
+  card.appendChild(drop);
+}
+
 function selModel(el,idx){
   var isGold=currentInst==="GOLD";
   var alreadyOpen=el.classList.contains('sel')||el.classList.contains('sel-gold');
-  // deselect all + close dropdowns
   document.querySelectorAll('.model-card').forEach(function(c){
     c.classList.remove('sel','sel-gold');
     c.querySelector('.mc-check').textContent='';
@@ -977,18 +1017,7 @@ function selModel(el,idx){
   el.classList.add(isGold?'sel-gold':'sel');
   el.querySelector('.mc-check').textContent='✓';
   selectedModel=idx;
-  // build dropdown checklist
-  var m=MODELS[idx];
-  var confirmed=m.checks.filter(function(c){return c.state==='done';}).length;
-  var total=m.checks.length;
-  var drop=document.createElement('div');
-  drop.className='mc-dropdown';
-  drop.innerHTML='<div class="mc-drop-hdr"><span class="mc-drop-title">Confluence Status</span><span class="mc-drop-score '+(confirmed===total?'score-full':confirmed>0?'score-part':'score-none')+'">'+confirmed+'/'+total+' confirmed</span></div>'+
-    m.checks.map(function(c){
-      var icon=c.state==='done'?'✓':c.state==='forming'?'⟳':'○';
-      return '<div class="mc-drop-item mcd-'+c.state+'"><span class="mcd-icon">'+icon+'</span><span class="mcd-text">'+c.text+'</span></div>';
-    }).join('');
-  el.appendChild(drop);
+  buildDropdown(el,idx);
   updateConf();updateSignal();
 }
 function updateConf(){var m=MODELS[selectedModel];document.getElementById('conf-title').textContent='Required Confluences — '+m.name;var cl=document.getElementById('conf-list');cl.innerHTML=m.conf.map(function(c){return '<div class="conf-item"><div class="conf-check ticked">✓</div><div class="conf-text">'+c+'</div></div>';}).join('');var sl=document.getElementById('step-list');sl.innerHTML='<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.18);margin-bottom:5px;font-family:var(--head)">Entry Steps</div>'+m.steps.map(function(s,i){return '<div class="step-item"><span class="step-num">'+(i+1)+'.</span><span>'+s+'</span></div>';}).join('');}
