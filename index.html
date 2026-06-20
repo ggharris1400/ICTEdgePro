@@ -771,15 +771,17 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
 // TradingView chart
 var TV_SYMBOLS={NQ:"TVC:NDX",ES:"TVC:SPX",GOLD:"TVC:GOLD"};
 var tvWidget=null;
+var TV_TF_MAP={"1m":"1","3m":"3","5m":"5","15m":"15"};
 function initTVChart(inst){
-  var sym=TV_SYMBOLS[inst]||"CME_MINI:NQ1!";
+  var sym=TV_SYMBOLS[inst]||"TVC:NDX";
+  var interval=TV_TF_MAP[currentTF]||"5";
   var mount=document.getElementById('tv-mount');
   mount.innerHTML='<div id="tradingview_chart" style="height:100%"></div>';
   tvWidget=null;
   tvWidget=new TradingView.widget({
     container_id:"tradingview_chart",
     symbol:sym,
-    interval:"5",
+    interval:interval,
     timezone:"America/New_York",
     theme:"dark",
     style:"1",
@@ -896,7 +898,7 @@ var INST={
 };
 var currentInst="NQ",currentTF="1m",selectedModel=0;
 function selInst(el,inst){document.querySelectorAll('[onclick*="selInst"]').forEach(function(p){p.classList.remove('pi','pg');});currentInst=inst;el.classList.add(inst==="GOLD"?"pg":"pi");updateDash();initTVChart(inst);}
-function selTF(el,tf){document.querySelectorAll('[onclick*="selTF"]').forEach(function(p){p.classList.remove('pt');});el.classList.add('pt');currentTF=tf;updateSignal();}
+function selTF(el,tf){document.querySelectorAll('[onclick*="selTF"]').forEach(function(p){p.classList.remove('pt');});el.classList.add('pt');currentTF=tf;updateSignal();initTVChart(currentInst);}
 function selModel(el,idx){var isGold=currentInst==="GOLD";document.querySelectorAll('.model-card').forEach(function(c){c.classList.remove('sel','sel-gold');c.querySelector('.mc-check').textContent='';});el.classList.add(isGold?'sel-gold':'sel');el.querySelector('.mc-check').textContent='✓';selectedModel=idx;updateConf();updateSignal();}
 function updateConf(){var m=MODELS[selectedModel];document.getElementById('conf-title').textContent='Required Confluences — '+m.name;var cl=document.getElementById('conf-list');cl.innerHTML=m.conf.map(function(c){return '<div class="conf-item"><div class="conf-check ticked">✓</div><div class="conf-text">'+c+'</div></div>';}).join('');var sl=document.getElementById('step-list');sl.innerHTML='<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.18);margin-bottom:5px;font-family:var(--head)">Entry Steps</div>'+m.steps.map(function(s,i){return '<div class="step-item"><span class="step-num">'+(i+1)+'.</span><span>'+s+'</span></div>';}).join('');}
 function updateSignal(){var m=MODELS[selectedModel];var d=INST[currentInst];document.getElementById('sig-mdl').textContent=m.name+' · '+currentTF;document.getElementById('lock-mdl').textContent=m.name+' · '+currentTF;var isGold=currentInst==="GOLD";var tags=document.getElementById('sig-tags');tags.innerHTML=m.tags.map(function(t,i){var cls=i<4?(isGold?'stag-hl-gold':'stag-hl'):'stag';return '<span class="stag '+cls+'">'+t+'</span>';}).join('');var sc=document.getElementById('sig-card');sc.className='sig-card '+(m.dir.indexOf('Short')===0?'sc-bear':'sc-bull');var sd=document.getElementById('sig-dir');sd.textContent=(m.dir.indexOf('Short')===0?'Short ':'Long ')+d.label;sd.className='sb '+(m.dir.indexOf('Short')===0?'sb-bear':'sb-bull');document.getElementById('exec-auto').className='exec-btn '+(isGold?'eb-auto-gold':'eb-auto');document.getElementById('sig-entry').textContent=m.entry;document.getElementById('sig-sl').textContent=m.sl;document.getElementById('sig-tp').textContent=m.tp;document.getElementById('lock-inst').textContent=(m.dir.indexOf('Short')===0?'Short ':'Long ')+d.label;document.getElementById('lock-entry').textContent=m.entry;}
