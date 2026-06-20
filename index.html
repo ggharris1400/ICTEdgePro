@@ -1115,7 +1115,7 @@ function show(s){document.querySelectorAll('.screen').forEach(function(el){el.cl
 function updateCountdown(){var now=new Date(),tom=new Date(now);tom.setDate(now.getDate()+1);tom.setHours(2,0,0,0);var diff=tom-now;var h=String(Math.floor(diff/3600000)).padStart(2,'0');var m=String(Math.floor((diff%3600000)/60000)).padStart(2,'0');var sec=String(Math.floor((diff%60000)/1000)).padStart(2,'0');var el=document.getElementById('countdown');if(el)el.textContent=h+':'+m+':'+sec;}
 
 function executeTrade(){show('lockout');}
-updateConf();updateCountdown();setInterval(updateCountdown,1000);
+updateConf();updateDash();updateCountdown();setInterval(updateCountdown,1000);
 // Init TV chart after DOM + tv.js are ready
 if(typeof TradingView!=='undefined'){initTVChart('NQ');}else{document.querySelector('script[src*="tv.js"]').addEventListener('load',function(){initTVChart('NQ');});}
 </script>
