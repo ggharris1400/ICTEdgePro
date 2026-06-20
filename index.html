@@ -497,6 +497,37 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
       <path class="equity-area" d="M0,95 L20,100 L40,91 L60,93 L80,79 L100,81 L120,72 L140,76 L160,59 L180,55 L200,58 L220,44 L240,46 L260,31 L280,33 L300,16 L320,18 L340,2 L340,100 L0,100 Z"/>
       <path class="equity-line" d="M0,95 L20,100 L40,91 L60,93 L80,79 L100,81 L120,72 L140,76 L160,59 L180,55 L200,58 L220,44 L240,46 L260,31 L280,33 L300,16 L320,18 L340,2"/>
       <circle class="equity-dot" cx="340" cy="2" r="4"/>
+      <!-- Crosshair -->
+      <line id="eq-crosshair" x1="0" y1="0" x2="0" y2="100" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="3,3" display="none"/>
+      <!-- Hover dot -->
+      <circle id="eq-hover-dot" r="5" fill="var(--cyan)" stroke="var(--void)" stroke-width="2" display="none" style="filter:drop-shadow(0 0 6px var(--cyan))"/>
+      <!-- Tooltip group -->
+      <g id="eq-tooltip" display="none">
+        <rect id="eq-tt-bg" rx="5" ry="5" height="36" fill="rgba(13,2,37,0.95)" stroke="rgba(0,229,255,0.35)" stroke-width="1"/>
+        <text id="eq-tt-profit" y="14" font-size="9" font-weight="700" font-family="Orbitron,sans-serif" fill="var(--cyan)"></text>
+        <text id="eq-tt-trade" y="28" font-size="8" font-family="Space Grotesk,sans-serif" fill="rgba(255,255,255,0.45)"></text>
+      </g>
+      <!-- Invisible hit areas at each data point -->
+      <g id="eq-hits" fill="transparent">
+        <circle cx="0"   cy="95"  r="12" class="eq-pt" data-trade="1"  data-pnl="-£120"  data-r="-0.8R"/>
+        <circle cx="20"  cy="100" r="12" class="eq-pt" data-trade="2"  data-pnl="-£220"  data-r="-1.5R"/>
+        <circle cx="40"  cy="91"  r="12" class="eq-pt" data-trade="3"  data-pnl="+£180"  data-r="+1.2R"/>
+        <circle cx="60"  cy="93"  r="12" class="eq-pt" data-trade="4"  data-pnl="+£60"   data-r="+0.4R"/>
+        <circle cx="80"  cy="79"  r="12" class="eq-pt" data-trade="5"  data-pnl="+£380"  data-r="+2.5R"/>
+        <circle cx="100" cy="81"  r="12" class="eq-pt" data-trade="6"  data-pnl="+£310"  data-r="+2.1R"/>
+        <circle cx="120" cy="72"  r="12" class="eq-pt" data-trade="7"  data-pnl="+£540"  data-r="+3.6R"/>
+        <circle cx="140" cy="76"  r="12" class="eq-pt" data-trade="8"  data-pnl="+£450"  data-r="+3.0R"/>
+        <circle cx="160" cy="59"  r="12" class="eq-pt" data-trade="9"  data-pnl="+£890"  data-r="+5.9R"/>
+        <circle cx="180" cy="55"  r="12" class="eq-pt" data-trade="10" data-pnl="+£980"  data-r="+6.5R"/>
+        <circle cx="200" cy="58"  r="12" class="eq-pt" data-trade="11" data-pnl="+£910"  data-r="+6.1R"/>
+        <circle cx="220" cy="44"  r="12" class="eq-pt" data-trade="12" data-pnl="+£1,280" data-r="+8.5R"/>
+        <circle cx="240" cy="46"  r="12" class="eq-pt" data-trade="13" data-pnl="+£1,220" data-r="+8.1R"/>
+        <circle cx="260" cy="31"  r="12" class="eq-pt" data-trade="14" data-pnl="+£1,650" data-r="+11R"/>
+        <circle cx="280" cy="33"  r="12" class="eq-pt" data-trade="15" data-pnl="+£1,590" data-r="+10.6R"/>
+        <circle cx="300" cy="16"  r="12" class="eq-pt" data-trade="16" data-pnl="+£2,100" data-r="+14R"/>
+        <circle cx="320" cy="18"  r="12" class="eq-pt" data-trade="17" data-pnl="+£2,040" data-r="+13.6R"/>
+        <circle cx="340" cy="2"   r="12" class="eq-pt" data-trade="18" data-pnl="+£4,500" data-r="+31R"/>
+      </g>
     </svg>
   </div>
   <!-- TradingView Live Chart -->
@@ -868,6 +899,55 @@ function selModel(el,idx){var isGold=currentInst==="GOLD";document.querySelector
 function updateConf(){var m=MODELS[selectedModel];document.getElementById('conf-title').textContent='Required Confluences — '+m.name;var cl=document.getElementById('conf-list');cl.innerHTML=m.conf.map(function(c){return '<div class="conf-item"><div class="conf-check ticked">✓</div><div class="conf-text">'+c+'</div></div>';}).join('');var sl=document.getElementById('step-list');sl.innerHTML='<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.18);margin-bottom:5px;font-family:var(--head)">Entry Steps</div>'+m.steps.map(function(s,i){return '<div class="step-item"><span class="step-num">'+(i+1)+'.</span><span>'+s+'</span></div>';}).join('');}
 function updateSignal(){var m=MODELS[selectedModel];var d=INST[currentInst];document.getElementById('sig-mdl').textContent=m.name+' · '+currentTF;document.getElementById('lock-mdl').textContent=m.name+' · '+currentTF;var isGold=currentInst==="GOLD";var tags=document.getElementById('sig-tags');tags.innerHTML=m.tags.map(function(t,i){var cls=i<4?(isGold?'stag-hl-gold':'stag-hl'):'stag';return '<span class="stag '+cls+'">'+t+'</span>';}).join('');var sc=document.getElementById('sig-card');sc.className='sig-card '+(m.dir.indexOf('Short')===0?'sc-bear':'sc-bull');var sd=document.getElementById('sig-dir');sd.textContent=(m.dir.indexOf('Short')===0?'Short ':'Long ')+d.label;sd.className='sb '+(m.dir.indexOf('Short')===0?'sb-bear':'sb-bull');document.getElementById('exec-auto').className='exec-btn '+(isGold?'eb-auto-gold':'eb-auto');document.getElementById('sig-entry').textContent=m.entry;document.getElementById('sig-sl').textContent=m.sl;document.getElementById('sig-tp').textContent=m.tp;document.getElementById('lock-inst').textContent=(m.dir.indexOf('Short')===0?'Short ':'Long ')+d.label;document.getElementById('lock-entry').textContent=m.entry;}
 function updateDash(){var d=INST[currentInst];document.getElementById('dash-title').textContent='Today\'s Setup · '+d.label;document.getElementById('bias-text').textContent=d.bias;document.getElementById('bias-text').className='bias-text '+(d.bias==='Bullish'?'bt-bull':'bt-bear');document.getElementById('bias-arrow').textContent=d.bias==='Bullish'?'↑':'↓';document.getElementById('bias-meta').textContent=d.meta;document.getElementById('conf-fill').style.width=d.conf+'%';document.getElementById('conf-fill').style.background=d.isGold?'linear-gradient(90deg,#D4A843,#F5A623)':'linear-gradient(90deg,var(--p500),var(--cyan))';document.getElementById('conf-pct').textContent=d.conf+'%';document.getElementById('macro-lbl').textContent=d.isGold?'Gold Drivers':'Macro Fundamentals';document.getElementById('macro-list').innerHTML=d.macro.map(function(r){return '<div class="macro-item"><span class="macro-nm">'+r[0]+'</span><span class="macro-vl '+r[2]+'">'+r[1]+'</span></div>';}).join('');document.getElementById('liq-title').textContent=d.liqTitle;document.getElementById('liq-ladder').innerHTML=d.liq;var isGold=d.isGold;document.querySelectorAll('.model-card').forEach(function(c,i){c.classList.remove('sel','sel-gold');c.querySelector('.mc-check').textContent='';if(i===selectedModel){c.classList.add(isGold?'sel-gold':'sel');c.querySelector('.mc-check').textContent='✓';}});updateSignal();}
+
+// Equity chart hover tooltip
+(function(){
+  var pts=document.querySelectorAll('.eq-pt');
+  var crosshair=document.getElementById('eq-crosshair');
+  var hoverDot=document.getElementById('eq-hover-dot');
+  var tooltip=document.getElementById('eq-tooltip');
+  var ttBg=document.getElementById('eq-tt-bg');
+  var ttProfit=document.getElementById('eq-tt-profit');
+  var ttTrade=document.getElementById('eq-tt-trade');
+  pts.forEach(function(pt){
+    pt.addEventListener('mouseenter',function(){
+      var cx=parseFloat(pt.getAttribute('cx'));
+      var cy=parseFloat(pt.getAttribute('cy'));
+      var pnl=pt.getAttribute('data-pnl');
+      var r=pt.getAttribute('data-r');
+      var trade=pt.getAttribute('data-trade');
+      var isPos=pnl.indexOf('+')===0;
+      // crosshair
+      crosshair.setAttribute('x1',cx);crosshair.setAttribute('x2',cx);
+      crosshair.removeAttribute('display');
+      // dot
+      hoverDot.setAttribute('cx',cx);hoverDot.setAttribute('cy',cy);
+      hoverDot.setAttribute('fill',isPos?'var(--cyan)':'var(--pink)');
+      hoverDot.removeAttribute('display');
+      // tooltip text
+      ttProfit.textContent=pnl;
+      ttProfit.setAttribute('fill',isPos?'var(--cyan)':'var(--pink)');
+      ttTrade.textContent='Trade '+trade+' · '+r;
+      // measure text width to size bg
+      var maxLen=Math.max(pnl.length,('Trade '+trade+' · '+r).length);
+      var w=Math.max(72,maxLen*6+16);
+      ttBg.setAttribute('width',w);
+      // position tooltip — flip left if near right edge
+      var tx=cx+8;
+      if(cx>260) tx=cx-w-8;
+      var ty=Math.max(2,cy-42);
+      ttBg.setAttribute('x',tx);ttBg.setAttribute('y',ty);
+      ttProfit.setAttribute('x',tx+8);ttProfit.setAttribute('y',ty+14);
+      ttTrade.setAttribute('x',tx+8);ttTrade.setAttribute('y',ty+28);
+      tooltip.removeAttribute('display');
+    });
+    pt.addEventListener('mouseleave',function(){
+      crosshair.setAttribute('display','none');
+      hoverDot.setAttribute('display','none');
+      tooltip.setAttribute('display','none');
+    });
+  });
+})();
 
 // FAQ
 function toggleFaq(el){var item=el.parentElement;item.classList.toggle('open');}
