@@ -537,7 +537,7 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
       <span class="tv-badge">● LIVE</span>
     </div>
     <div id="tv-container" class="tv-container">
-      <div class="tradingview-widget-container" style="height:100%">
+      <div id="tv-mount" style="height:100%">
         <div id="tradingview_chart" style="height:100%"></div>
       </div>
     </div>
@@ -773,7 +773,9 @@ var TV_SYMBOLS={NQ:"CME_MINI:NQ1!",ES:"CME_MINI:MES1!",GOLD:"OANDA:XAUUSD"};
 var tvWidget=null;
 function initTVChart(inst){
   var sym=TV_SYMBOLS[inst]||"CME_MINI:NQ1!";
-  if(tvWidget){tvWidget.remove();tvWidget=null;}
+  var mount=document.getElementById('tv-mount');
+  mount.innerHTML='<div id="tradingview_chart" style="height:100%"></div>';
+  tvWidget=null;
   tvWidget=new TradingView.widget({
     container_id:"tradingview_chart",
     symbol:sym,
