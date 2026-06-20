@@ -259,7 +259,10 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
 .streak-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.22);margin-bottom:8px;font-family:var(--head)}
 .streak-fire{font-family:var(--fun);font-size:22px;font-weight:900;color:#FF6B00;text-shadow:0 0 20px #FF6B00,0 0 40px rgba(255,107,0,.4);margin-bottom:10px;animation:tierFloat 2s ease-in-out infinite}
 .streak-days{display:flex;gap:6px;justify-content:center;margin-top:8px}
-.day-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--head);border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.25);transition:all .3s}
+.day-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--head);border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.25);transition:all .3s;cursor:pointer;position:relative}
+.streak-tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(13,2,37,0.97);border:1px solid rgba(191,90,242,0.4);border-radius:8px;padding:7px 10px;white-space:nowrap;pointer-events:none;z-index:10;text-align:center}
+.streak-tooltip .stt-pnl{font-size:11px;font-weight:700;font-family:var(--head);display:block;margin-bottom:2px}
+.streak-tooltip .stt-meta{font-size:9px;color:rgba(255,255,255,0.4);display:block}
 .day-dot.win{background:rgba(57,255,20,.15);border-color:#39FF14;color:#39FF14;box-shadow:0 0 10px rgba(57,255,20,.3)}
 .day-dot.loss{background:rgba(255,0,144,.1);border-color:var(--pink);color:var(--pink)}
 .day-dot.today{border-color:var(--neon);color:var(--neon);background:rgba(191,90,242,.12);animation:todayPulse 2s ease-in-out infinite}
@@ -588,24 +591,56 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
 <div id="screen-progress" class="screen progress-screen">
   <div class="equity-card">
     <div class="equity-header"><div class="equity-title">Equity Curve — 18 Trades</div><div class="equity-pnl">+£4,500 (+31R)</div></div>
-    <svg viewBox="0 0 340 100" style="width:100%;height:100px" preserveAspectRatio="none">
+    <svg id="prog-svg" viewBox="0 0 340 100" style="width:100%;height:100px;overflow:visible" preserveAspectRatio="none">
       <defs><linearGradient id="eg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#BF5AF2" stop-opacity=".5"/><stop offset="100%" stop-color="#BF5AF2" stop-opacity="0"/></linearGradient></defs>
       <path fill="url(#eg2)" opacity=".4" d="M0,95 L20,100 L40,91 L60,93 L80,79 L100,81 L120,72 L140,76 L160,59 L180,55 L200,58 L220,44 L240,46 L260,31 L280,33 L300,16 L320,18 L340,2 L340,100 L0,100 Z"/>
       <path fill="none" stroke="url(#lineGrad)" stroke-width="2.5" stroke-linecap="round" d="M0,95 L20,100 L40,91 L60,93 L80,79 L100,81 L120,72 L140,76 L160,59 L180,55 L200,58 L220,44 L240,46 L260,31 L280,33 L300,16 L320,18 L340,2" style="filter:drop-shadow(0 0 4px #BF5AF2)"/>
       <circle cx="340" cy="2" r="4" fill="var(--neon)" stroke="var(--void)" stroke-width="2" style="filter:drop-shadow(0 0 6px var(--neon))"/>
+      <!-- Crosshair -->
+      <line id="pg-crosshair" x1="0" y1="0" x2="0" y2="100" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="3,3" display="none"/>
+      <!-- Hover dot -->
+      <circle id="pg-hover-dot" r="5" fill="var(--neon)" stroke="var(--void)" stroke-width="2" display="none" style="filter:drop-shadow(0 0 6px var(--neon))"/>
+      <!-- Tooltip -->
+      <g id="pg-tooltip" display="none">
+        <rect id="pg-tt-bg" rx="5" ry="5" height="36" fill="rgba(13,2,37,0.95)" stroke="rgba(191,90,242,0.4)" stroke-width="1"/>
+        <text id="pg-tt-profit" y="14" font-size="9" font-weight="700" font-family="Orbitron,sans-serif" fill="var(--neon)"></text>
+        <text id="pg-tt-trade" y="28" font-size="8" font-family="Space Grotesk,sans-serif" fill="rgba(255,255,255,0.45)"></text>
+      </g>
+      <!-- Hit areas -->
+      <g fill="transparent">
+        <circle cx="0"   cy="95"  r="12" class="pg-pt" data-trade="1"  data-pnl="-£120"  data-r="-0.8R"/>
+        <circle cx="20"  cy="100" r="12" class="pg-pt" data-trade="2"  data-pnl="-£220"  data-r="-1.5R"/>
+        <circle cx="40"  cy="91"  r="12" class="pg-pt" data-trade="3"  data-pnl="+£180"  data-r="+1.2R"/>
+        <circle cx="60"  cy="93"  r="12" class="pg-pt" data-trade="4"  data-pnl="+£60"   data-r="+0.4R"/>
+        <circle cx="80"  cy="79"  r="12" class="pg-pt" data-trade="5"  data-pnl="+£380"  data-r="+2.5R"/>
+        <circle cx="100" cy="81"  r="12" class="pg-pt" data-trade="6"  data-pnl="+£310"  data-r="+2.1R"/>
+        <circle cx="120" cy="72"  r="12" class="pg-pt" data-trade="7"  data-pnl="+£540"  data-r="+3.6R"/>
+        <circle cx="140" cy="76"  r="12" class="pg-pt" data-trade="8"  data-pnl="+£450"  data-r="+3.0R"/>
+        <circle cx="160" cy="59"  r="12" class="pg-pt" data-trade="9"  data-pnl="+£890"  data-r="+5.9R"/>
+        <circle cx="180" cy="55"  r="12" class="pg-pt" data-trade="10" data-pnl="+£980"  data-r="+6.5R"/>
+        <circle cx="200" cy="58"  r="12" class="pg-pt" data-trade="11" data-pnl="+£910"  data-r="+6.1R"/>
+        <circle cx="220" cy="44"  r="12" class="pg-pt" data-trade="12" data-pnl="+£1,280" data-r="+8.5R"/>
+        <circle cx="240" cy="46"  r="12" class="pg-pt" data-trade="13" data-pnl="+£1,220" data-r="+8.1R"/>
+        <circle cx="260" cy="31"  r="12" class="pg-pt" data-trade="14" data-pnl="+£1,650" data-r="+11R"/>
+        <circle cx="280" cy="33"  r="12" class="pg-pt" data-trade="15" data-pnl="+£1,590" data-r="+10.6R"/>
+        <circle cx="300" cy="16"  r="12" class="pg-pt" data-trade="16" data-pnl="+£2,100" data-r="+14R"/>
+        <circle cx="320" cy="18"  r="12" class="pg-pt" data-trade="17" data-pnl="+£2,040" data-r="+13.6R"/>
+        <circle cx="340" cy="2"   r="12" class="pg-pt" data-trade="18" data-pnl="+£4,500" data-r="+31R"/>
+      </g>
     </svg>
   </div>
   <div class="streak-card">
     <div class="streak-title">Win Streak</div>
     <div class="streak-fire">🔥 7-Day Streak!</div>
-    <div class="streak-days">
-      <div class="day-dot win">M</div>
-      <div class="day-dot win">T</div>
-      <div class="day-dot win">W</div>
-      <div class="day-dot win">T</div>
-      <div class="day-dot win">F</div>
-      <div class="day-dot loss">S</div>
-      <div class="day-dot today">S</div>
+    <div class="streak-days" style="position:relative">
+      <div class="day-dot win"  data-day="Mon" data-pnl="+£380" data-r="+2.5R">M</div>
+      <div class="day-dot win"  data-day="Tue" data-pnl="+£540" data-r="+3.6R">T</div>
+      <div class="day-dot win"  data-day="Wed" data-pnl="+£890" data-r="+5.9R">W</div>
+      <div class="day-dot win"  data-day="Thu" data-pnl="+£310" data-r="+2.1R">T</div>
+      <div class="day-dot win"  data-day="Fri" data-pnl="+£450" data-r="+3.0R">F</div>
+      <div class="day-dot loss" data-day="Sat" data-pnl="-£120" data-r="-0.8R">S</div>
+      <div class="day-dot today" data-day="Sun" data-pnl="No trade yet" data-r="">S</div>
+      <div id="streak-tooltip" class="streak-tooltip" style="display:none"></div>
     </div>
   </div>
   <div class="mini-stats-row">
@@ -944,6 +979,73 @@ function updateDash(){var d=INST[currentInst];document.getElementById('dash-titl
       crosshair.setAttribute('display','none');
       hoverDot.setAttribute('display','none');
       tooltip.setAttribute('display','none');
+    });
+  });
+})();
+
+// Progress equity chart hover
+(function(){
+  var pts=document.querySelectorAll('.pg-pt');
+  var crosshair=document.getElementById('pg-crosshair');
+  var hoverDot=document.getElementById('pg-hover-dot');
+  var tooltip=document.getElementById('pg-tooltip');
+  var ttBg=document.getElementById('pg-tt-bg');
+  var ttProfit=document.getElementById('pg-tt-profit');
+  var ttTrade=document.getElementById('pg-tt-trade');
+  pts.forEach(function(pt){
+    pt.addEventListener('mouseenter',function(){
+      var cx=parseFloat(pt.getAttribute('cx'));
+      var cy=parseFloat(pt.getAttribute('cy'));
+      var pnl=pt.getAttribute('data-pnl');
+      var r=pt.getAttribute('data-r');
+      var trade=pt.getAttribute('data-trade');
+      var isPos=pnl.indexOf('+')===0;
+      crosshair.setAttribute('x1',cx);crosshair.setAttribute('x2',cx);
+      crosshair.removeAttribute('display');
+      hoverDot.setAttribute('cx',cx);hoverDot.setAttribute('cy',cy);
+      hoverDot.setAttribute('fill',isPos?'var(--neon)':'var(--pink)');
+      hoverDot.removeAttribute('display');
+      ttProfit.textContent=pnl;
+      ttProfit.setAttribute('fill',isPos?'var(--neon)':'var(--pink)');
+      ttTrade.textContent='Trade '+trade+' · '+r;
+      var w=Math.max(72,Math.max(pnl.length,('Trade '+trade+' · '+r).length)*6+16);
+      var tx=cx+8;if(cx>260) tx=cx-w-8;
+      var ty=Math.max(2,cy-42);
+      ttBg.setAttribute('width',w);ttBg.setAttribute('x',tx);ttBg.setAttribute('y',ty);
+      ttProfit.setAttribute('x',tx+8);ttProfit.setAttribute('y',ty+14);
+      ttTrade.setAttribute('x',tx+8);ttTrade.setAttribute('y',ty+28);
+      tooltip.removeAttribute('display');
+    });
+    pt.addEventListener('mouseleave',function(){
+      crosshair.setAttribute('display','none');
+      hoverDot.setAttribute('display','none');
+      tooltip.setAttribute('display','none');
+    });
+  });
+})();
+
+// Streak day dot hover
+(function(){
+  var dots=document.querySelectorAll('.day-dot[data-pnl]');
+  var tip=document.getElementById('streak-tooltip');
+  dots.forEach(function(dot){
+    dot.addEventListener('mouseenter',function(){
+      var pnl=dot.getAttribute('data-pnl');
+      var r=dot.getAttribute('data-r');
+      var day=dot.getAttribute('data-day');
+      var isPos=pnl.indexOf('+')===0;
+      var isNeutral=pnl==='No trade yet';
+      var color=isNeutral?'rgba(255,255,255,0.5)':isPos?'#39FF14':'var(--pink)';
+      tip.innerHTML='<span class="stt-pnl" style="color:'+color+'">'+pnl+'</span>'+(r?'<span class="stt-meta">'+day+' · '+r+'</span>':'<span class="stt-meta">'+day+'</span>');
+      // position relative to this dot
+      var dotRect=dot.getBoundingClientRect();
+      var parentRect=dot.parentElement.getBoundingClientRect();
+      tip.style.display='block';
+      tip.style.left=(dot.offsetLeft+dot.offsetWidth/2)+'px';
+      tip.style.bottom=(dot.parentElement.offsetHeight-dot.offsetTop+8)+'px';
+    });
+    dot.addEventListener('mouseleave',function(){
+      tip.style.display='none';
     });
   });
 })();
