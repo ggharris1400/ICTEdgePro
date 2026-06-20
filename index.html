@@ -363,7 +363,6 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
   <div class="nav-logo">Flow<span>State</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="show('landing')">Home</button>
-    <button class="nav-tab" onclick="show('premarket')">Pre-Market</button>
     <button class="nav-tab" onclick="show('dashboard')">Dashboard</button>
     <button class="nav-tab" onclick="show('progress')">Progress</button>
     <button class="nav-tab" onclick="show('faq')">FAQ</button>
@@ -380,7 +379,7 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
     <h1 class="hero-title">Pass Your Challenge.<br/><em>Every. Single. Time.</em></h1>
     <p class="hero-sub">Five precision ICT entry models. One trade per day. AI that reads liquidity like a seasoned Smart Money trader — and locks your account once it's done.</p>
     <div class="hero-cta">
-      <button class="btn-primary" onclick="show('premarket')">See Pre-Market →</button>
+      <button class="btn-primary" onclick="show('dashboard')">Live Dashboard →</button>
       <button class="btn-ghost" onclick="show('dashboard')">Live Dashboard</button>
     </div>
   </div>
@@ -388,6 +387,25 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
     <div class="stat-cell"><div class="stat-num">70%+</div><div class="stat-label">Win Rate</div></div>
     <div class="stat-cell"><div class="stat-num">1/day</div><div class="stat-label">Max Trades</div></div>
     <div class="stat-cell"><div class="stat-num">2.8R</div><div class="stat-label">Avg RR</div></div>
+  </div>
+  <div class="premarket" style="margin-bottom:18px">
+    <div class="personal-statement">"One setup. One trade. Protect the account. Trust the model."</div>
+    <div class="tier-showcase tier-s" id="tier-showcase">
+      <div class="tier-particles" id="tier-particles"></div>
+      <div class="tier-label" id="tier-label">S TIER</div>
+      <div class="tier-subtitle" id="tier-subtitle">SETUP FORMING!</div>
+      <div class="setup-progress-wrap">
+        <div class="setup-progress-label"><span id="prog-label">Confluence building...</span><span id="prog-pct">75%</span></div>
+        <div class="setup-progress-track"><div class="setup-progress-bar" id="setup-bar" style="width:75%"></div></div>
+      </div>
+      <div class="pm-checklist" id="pm-checklist"></div>
+    </div>
+    <div class="tier-switcher">
+      <button class="ts-btn" onclick="setTier('S')">⭐ S Tier</button>
+      <button class="ts-btn" onclick="setTier('Aplus')">💎 A+ Tier</button>
+      <button class="ts-btn" onclick="setTier('A')">✅ A Tier</button>
+      <button class="ts-btn" onclick="setTier('none')">🔒 No Setup</button>
+    </div>
   </div>
   <div class="features-grid">
     <div class="feature-card"><div class="feature-icon fi-purple">🎯</div><div class="feature-title">5 ICT Entry Models</div><div class="feature-desc">London & Asia killzone sweeps, NDOG, PDH bullish and PDL bearish — full CISD, IFVG and BOS logic.</div></div>
@@ -444,28 +462,6 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
   </div>
 </div>
 
-<!-- ══ PRE-MARKET ══ -->
-<div id="screen-premarket" class="screen">
-  <div class="premarket">
-    <div class="personal-statement">"One setup. One trade. Protect the account. Trust the model."</div>
-    <div class="tier-showcase tier-s" id="tier-showcase">
-      <div class="tier-particles" id="tier-particles"></div>
-      <div class="tier-label" id="tier-label">S TIER</div>
-      <div class="tier-subtitle" id="tier-subtitle">SETUP FORMING!</div>
-      <div class="setup-progress-wrap">
-        <div class="setup-progress-label"><span id="prog-label">Confluence building...</span><span id="prog-pct">75%</span></div>
-        <div class="setup-progress-track"><div class="setup-progress-bar" id="setup-bar" style="width:75%"></div></div>
-      </div>
-      <div class="pm-checklist" id="pm-checklist"></div>
-    </div>
-    <div class="tier-switcher">
-      <button class="ts-btn" onclick="setTier('S')">⭐ S Tier</button>
-      <button class="ts-btn" onclick="setTier('Aplus')">💎 A+ Tier</button>
-      <button class="ts-btn" onclick="setTier('A')">✅ A Tier</button>
-      <button class="ts-btn" onclick="setTier('none')">🔒 No Setup</button>
-    </div>
-  </div>
-</div>
 
 <!-- ══ DASHBOARD ══ -->
 <div id="screen-dashboard" class="screen dash">
@@ -959,7 +955,7 @@ function toggleFaq(el){var item=el.parentElement;item.classList.toggle('open');}
 function showLegal(t){document.querySelectorAll('.legal-tab').forEach(function(b){b.classList.remove('active');});document.querySelectorAll('.legal-doc').forEach(function(d){d.classList.remove('active');});event.target.classList.add('active');document.getElementById('legal-'+t).classList.add('active');}
 
 // Nav
-function show(s){document.querySelectorAll('.screen').forEach(function(el){el.classList.remove('active');});document.querySelectorAll('.nav-tab').forEach(function(el){el.classList.remove('active');});document.getElementById('screen-'+s).classList.add('active');var map={landing:0,premarket:1,dashboard:2,progress:3,faq:4,legal:5,account:6};if(map[s]!==undefined)document.querySelectorAll('.nav-tab')[map[s]].classList.add('active');}
+function show(s){document.querySelectorAll('.screen').forEach(function(el){el.classList.remove('active');});document.querySelectorAll('.nav-tab').forEach(function(el){el.classList.remove('active');});document.getElementById('screen-'+s).classList.add('active');var map={landing:0,dashboard:1,progress:2,faq:3,legal:4,account:5};if(map[s]!==undefined)document.querySelectorAll('.nav-tab')[map[s]].classList.add('active');}
 
 // Countdown
 function updateCountdown(){var now=new Date(),tom=new Date(now);tom.setDate(now.getDate()+1);tom.setHours(2,0,0,0);var diff=tom-now;var h=String(Math.floor(diff/3600000)).padStart(2,'0');var m=String(Math.floor((diff%3600000)/60000)).padStart(2,'0');var sec=String(Math.floor((diff%60000)/1000)).padStart(2,'0');var el=document.getElementById('countdown');if(el)el.textContent=h+':'+m+':'+sec;}
