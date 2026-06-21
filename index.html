@@ -897,19 +897,20 @@ var sb = null;
 var currentUser = null;
 try {
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  // onAuthStateChange fires INITIAL_SESSION on every page load — single source of truth
-  sb.auth.onAuthStateChange(function(event, session) {
-    currentUser = session ? session.user : null;
-    if (currentUser) {
+  // Check for existing session on page load
+  sb.auth.getSession().then(function(r) {
+    if (r.data && r.data.session) {
+      currentUser = r.data.session.user;
       showApp();
-    } else if (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT') {
-      showAuthScreen();
     }
   });
+  // Handle logout from other tabs / token expiry
+  sb.auth.onAuthStateChange(function(event, session) {
+    if (event === 'SIGNED_OUT') { currentUser = null; showAuthScreen(); }
+  });
 } catch(e) {
-  console.error('Supabase init error:', e);
   var m = document.getElementById('login-msg');
-  if (m) { m.textContent = 'Auth error: ' + e.message; m.className = 'auth-msg err'; }
+  if (m) { m.textContent = 'SDK error: ' + e.message; m.className = 'auth-msg err'; }
 }
 
 function showApp() {
@@ -939,10 +940,15 @@ async function doLogin() {
   if (!sb) { msg.textContent='Auth not loaded — please refresh.'; msg.className='auth-msg err'; return; }
   if (!email || !password) { msg.textContent='Fill in both fields.'; msg.className='auth-msg err'; return; }
   btn.disabled=true; btn.textContent='Logging in...';
-  var r = await sb.auth.signInWithPassword({email:email, password:password});
-  btn.disabled=false; btn.textContent='Login →';
-  if (r.error) { msg.textContent=r.error.message; msg.className='auth-msg err'; }
-  else { msg.textContent=''; }
+  try {
+    var r = await sb.auth.signInWithPassword({email:email, password:password});
+    btn.disabled=false; btn.textContent='Login →';
+    if (r.error) { msg.textContent=r.error.message; msg.className='auth-msg err'; }
+    else { currentUser=r.data.user; showApp(); }
+  } catch(e) {
+    btn.disabled=false; btn.textContent='Login →';
+    msg.textContent='Error: '+e.message; msg.className='auth-msg err';
+  }
 }
 
 // Sign up
@@ -951,13 +957,20 @@ async function doSignup() {
   var password = document.getElementById('signup-password').value;
   var btn = document.getElementById('signup-btn');
   var msg = document.getElementById('signup-msg');
+  if (!sb) { msg.textContent='Auth not loaded — please refresh.'; msg.className='auth-msg err'; return; }
   if (!email || !password) { msg.textContent='Fill in both fields.'; msg.className='auth-msg err'; return; }
   if (password.length < 8) { msg.textContent='Password must be 8+ characters.'; msg.className='auth-msg err'; return; }
   btn.disabled=true; btn.textContent='Creating account...';
-  var r = await sb.auth.signUp({email:email, password:password});
-  btn.disabled=false; btn.textContent='Create Account →';
-  if (r.error) { msg.textContent=r.error.message; msg.className='auth-msg err'; }
-  else { msg.textContent='Check your email to confirm your account ✓'; msg.className='auth-msg ok'; }
+  try {
+    var r = await sb.auth.signUp({email:email, password:password});
+    btn.disabled=false; btn.textContent='Create Account →';
+    if (r.error) { msg.textContent=r.error.message; msg.className='auth-msg err'; }
+    else if (r.data && r.data.session) { currentUser=r.data.user; showApp(); }
+    else { msg.textContent='Account created! Now log in.'; msg.className='auth-msg ok'; switchAuthTab('login'); }
+  } catch(e) {
+    btn.disabled=false; btn.textContent='Create Account →';
+    msg.textContent='Error: '+e.message; msg.className='auth-msg err';
+  }
 }
 
 // Logout
