@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -893,25 +893,24 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
 // 2. Copy "Project URL" and "anon public" key and paste below
 var SUPABASE_URL      = 'https://qcjpklpzmdlfasiqnotj.supabase.co';
 var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjanBrbHB6bWRsZmFzaXFub3RqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMDk5MTUsImV4cCI6MjA5NzU4NTkxNX0.kKt8RvslLGMc8Z_Rj9AAIRj_zSsV3w1ITORnB2NfltQ';
-var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+var sb = null;
 var currentUser = null;
-
-// Auth state listener — fires on login, logout, and page refresh
-sb.auth.onAuthStateChange(function(event, session) {
-  currentUser = session ? session.user : null;
-  if (currentUser) {
-    showApp();
-  } else {
-    showAuthScreen();
-  }
-});
-
-// Check existing session immediately on load
-sb.auth.getSession().then(function(r) {
-  var session = r.data ? r.data.session : null;
-  currentUser = session ? session.user : null;
-  if (currentUser) { showApp(); } else { showAuthScreen(); }
-});
+try {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  sb.auth.onAuthStateChange(function(event, session) {
+    currentUser = session ? session.user : null;
+    if (currentUser) { showApp(); } else { showAuthScreen(); }
+  });
+  sb.auth.getSession().then(function(r) {
+    var session = r.data ? r.data.session : null;
+    currentUser = session ? session.user : null;
+    if (currentUser) { showApp(); } else { showAuthScreen(); }
+  });
+} catch(e) {
+  console.error('Supabase init error:', e);
+  var m = document.getElementById('login-msg');
+  if (m) { m.textContent = 'Auth error: ' + e.message; m.className = 'auth-msg err'; }
+}
 
 function showApp() {
   show('landing');
@@ -937,6 +936,7 @@ async function doLogin() {
   var password = document.getElementById('login-password').value;
   var btn = document.getElementById('login-btn');
   var msg = document.getElementById('login-msg');
+  if (!sb) { msg.textContent='Auth not loaded — please refresh.'; msg.className='auth-msg err'; return; }
   if (!email || !password) { msg.textContent='Fill in both fields.'; msg.className='auth-msg err'; return; }
   btn.disabled=true; btn.textContent='Logging in...';
   var r = await sb.auth.signInWithPassword({email:email, password:password});
