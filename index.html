@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet"/>
-<script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -893,37 +892,33 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
 // 2. Copy "Project URL" and "anon public" key and paste below
 var SUPABASE_URL      = 'https://qcjpklpzmdlfasiqnotj.supabase.co';
 var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjanBrbHB6bWRsZmFzaXFub3RqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMDk5MTUsImV4cCI6MjA5NzU4NTkxNX0.kKt8RvslLGMc8Z_Rj9AAIRj_zSsV3w1ITORnB2NfltQ';
-var sb = null;
+// ── AUTH (plain fetch — no SDK) ──────────────────────────────
 var currentUser = null;
-try {
-  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  // Check for existing session on page load
-  sb.auth.getSession().then(function(r) {
-    if (r.data && r.data.session) {
-      currentUser = r.data.session.user;
-      showApp();
-    }
-  });
-  // Handle logout from other tabs / token expiry
-  sb.auth.onAuthStateChange(function(event, session) {
-    if (event === 'SIGNED_OUT') { currentUser = null; showAuthScreen(); }
-  });
-} catch(e) {
-  var m = document.getElementById('login-msg');
-  if (m) { m.textContent = 'SDK error: ' + e.message; m.className = 'auth-msg err'; }
+
+function sbFetch(path, method, body, extraHeaders) {
+  var token = localStorage.getItem('fs_token');
+  var headers = {'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY};
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  if (extraHeaders) Object.keys(extraHeaders).forEach(function(k){headers[k]=extraHeaders[k];});
+  var opts = {method: method||'GET', headers: headers};
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(SUPABASE_URL + path, opts);
 }
 
-function showApp() {
-  show('landing');
-  populateAccount();
-}
+// Restore session from localStorage on page load
+(function(){
+  var u = localStorage.getItem('fs_user');
+  var t = localStorage.getItem('fs_token');
+  if (u && t) { try { currentUser = JSON.parse(u); } catch(e){} }
+  if (currentUser) { showApp(); } else { showAuthScreen(); }
+})();
+
+function showApp() { show('landing'); populateAccount(); }
 function showAuthScreen() {
   document.querySelectorAll('.screen').forEach(function(el){el.classList.remove('active');});
   document.querySelectorAll('.nav-tab').forEach(function(el){el.classList.remove('active');});
   document.getElementById('screen-auth').classList.add('active');
 }
-
-// Auth tab switch
 function switchAuthTab(t) {
   document.getElementById('tab-login').classList.toggle('active', t==='login');
   document.getElementById('tab-signup').classList.toggle('active', t==='signup');
@@ -931,86 +926,90 @@ function switchAuthTab(t) {
   document.getElementById('auth-signup-form').style.display = t==='signup' ? '' : 'none';
 }
 
-// Login
 async function doLogin() {
-  var email    = document.getElementById('login-email').value.trim();
-  var password = document.getElementById('login-password').value;
-  var btn = document.getElementById('login-btn');
-  var msg = document.getElementById('login-msg');
-  if (!sb) { msg.textContent='Auth not loaded — please refresh.'; msg.className='auth-msg err'; return; }
-  if (!email || !password) { msg.textContent='Fill in both fields.'; msg.className='auth-msg err'; return; }
+  var email = document.getElementById('login-email').value.trim();
+  var pass  = document.getElementById('login-password').value;
+  var btn   = document.getElementById('login-btn');
+  var msg   = document.getElementById('login-msg');
+  if (!email||!pass){msg.textContent='Fill in both fields.';msg.className='auth-msg err';return;}
   btn.disabled=true; btn.textContent='Logging in...';
   try {
-    var r = await sb.auth.signInWithPassword({email:email, password:password});
+    var res  = await sbFetch('/auth/v1/token?grant_type=password','POST',{email:email,password:pass});
+    var data = await res.json();
     btn.disabled=false; btn.textContent='Login →';
-    if (r.error) { msg.textContent=r.error.message; msg.className='auth-msg err'; }
-    else { currentUser=r.data.user; showApp(); }
-  } catch(e) {
-    btn.disabled=false; btn.textContent='Login →';
-    msg.textContent='Error: '+e.message; msg.className='auth-msg err';
-  }
+    if (!res.ok||data.error_code||data.error){
+      msg.textContent=data.error_description||data.msg||data.error||'Login failed.';
+      msg.className='auth-msg err';
+    } else {
+      localStorage.setItem('fs_token', data.access_token);
+      currentUser = data.user;
+      localStorage.setItem('fs_user', JSON.stringify(currentUser));
+      showApp();
+    }
+  } catch(e){ btn.disabled=false; btn.textContent='Login →'; msg.textContent='Network error — try again.'; msg.className='auth-msg err'; }
 }
 
-// Sign up
 async function doSignup() {
-  var email    = document.getElementById('signup-email').value.trim();
-  var password = document.getElementById('signup-password').value;
-  var btn = document.getElementById('signup-btn');
-  var msg = document.getElementById('signup-msg');
-  if (!sb) { msg.textContent='Auth not loaded — please refresh.'; msg.className='auth-msg err'; return; }
-  if (!email || !password) { msg.textContent='Fill in both fields.'; msg.className='auth-msg err'; return; }
-  if (password.length < 8) { msg.textContent='Password must be 8+ characters.'; msg.className='auth-msg err'; return; }
+  var email = document.getElementById('signup-email').value.trim();
+  var pass  = document.getElementById('signup-password').value;
+  var btn   = document.getElementById('signup-btn');
+  var msg   = document.getElementById('signup-msg');
+  if (!email||!pass){msg.textContent='Fill in both fields.';msg.className='auth-msg err';return;}
+  if (pass.length<8){msg.textContent='Password must be 8+ characters.';msg.className='auth-msg err';return;}
   btn.disabled=true; btn.textContent='Creating account...';
   try {
-    var r = await sb.auth.signUp({email:email, password:password});
+    var res  = await sbFetch('/auth/v1/signup','POST',{email:email,password:pass});
+    var data = await res.json();
     btn.disabled=false; btn.textContent='Create Account →';
-    if (r.error) { msg.textContent=r.error.message; msg.className='auth-msg err'; }
-    else if (r.data && r.data.session) { currentUser=r.data.user; showApp(); }
-    else { msg.textContent='Account created! Now log in.'; msg.className='auth-msg ok'; switchAuthTab('login'); }
-  } catch(e) {
-    btn.disabled=false; btn.textContent='Create Account →';
-    msg.textContent='Error: '+e.message; msg.className='auth-msg err';
-  }
+    if (!res.ok||data.error_code||data.error){
+      msg.textContent=data.error_description||data.msg||data.error||'Signup failed.';
+      msg.className='auth-msg err';
+    } else if (data.access_token) {
+      localStorage.setItem('fs_token', data.access_token);
+      currentUser = data.user;
+      localStorage.setItem('fs_user', JSON.stringify(currentUser));
+      showApp();
+    } else {
+      msg.textContent='Account created! Now log in.'; msg.className='auth-msg ok';
+      switchAuthTab('login');
+    }
+  } catch(e){ btn.disabled=false; btn.textContent='Create Account →'; msg.textContent='Network error — try again.'; msg.className='auth-msg err'; }
 }
 
-// Logout
-async function doLogout() {
-  await sb.auth.signOut();
+function doLogout() {
+  var token = localStorage.getItem('fs_token');
+  if (token) sbFetch('/auth/v1/logout','POST').catch(function(){});
+  localStorage.removeItem('fs_token');
+  localStorage.removeItem('fs_user');
+  currentUser = null;
+  showAuthScreen();
 }
 
-// Populate account screen from session
 function populateAccount() {
   if (!currentUser) return;
-  var email    = currentUser.email || '';
-  var initials = email.slice(0,2).toUpperCase();
-  var handle   = email.split('@')[0];
+  var email = currentUser.email||'';
   var el;
-  el=document.getElementById('acc-avatar'); if(el) el.textContent=initials;
-  el=document.getElementById('acc-name');   if(el) el.textContent=handle;
+  el=document.getElementById('acc-avatar'); if(el) el.textContent=email.slice(0,2).toUpperCase();
+  el=document.getElementById('acc-name');   if(el) el.textContent=email.split('@')[0];
   el=document.getElementById('acc-email');  if(el) el.textContent=email;
 }
 
-// Check DB lockout — called when navigating to Dashboard
 async function checkLockout() {
   if (!currentUser) return;
   var now = new Date().toISOString();
-  var r = await sb.from('trades')
-    .select('*')
-    .eq('user_id', currentUser.id)
-    .gt('lockout_until', now)
-    .order('taken_at', {ascending:false})
-    .limit(1);
-  if (r.data && r.data.length > 0) {
-    var t = r.data[0];
-    var el;
-    el=document.getElementById('lock-inst');  if(el) el.textContent=t.direction+' '+t.instrument;
-    el=document.getElementById('lock-mdl');   if(el) el.textContent=t.model_name||'';
-    el=document.getElementById('lock-entry'); if(el) el.textContent=t.entry||'';
-    // bypass gating — directly activate lockout screen
-    document.querySelectorAll('.screen').forEach(function(e){e.classList.remove('active');});
-    document.querySelectorAll('.nav-tab').forEach(function(e){e.classList.remove('active');});
-    document.getElementById('screen-lockout').classList.add('active');
-  }
+  try {
+    var res = await sbFetch('/rest/v1/trades?user_id=eq.'+currentUser.id+'&lockout_until=gt.'+encodeURIComponent(now)+'&order=taken_at.desc&limit=1','GET');
+    var data = await res.json();
+    if (data && data.length > 0) {
+      var t = data[0]; var el;
+      el=document.getElementById('lock-inst');  if(el) el.textContent=t.direction+' '+t.instrument;
+      el=document.getElementById('lock-mdl');   if(el) el.textContent=t.model_name||'';
+      el=document.getElementById('lock-entry'); if(el) el.textContent=t.entry||'';
+      document.querySelectorAll('.screen').forEach(function(e){e.classList.remove('active');});
+      document.querySelectorAll('.nav-tab').forEach(function(e){e.classList.remove('active');});
+      document.getElementById('screen-lockout').classList.add('active');
+    }
+  } catch(e){}
 }
 
 // ── SCREEN NAVIGATION ────────────────────────────────────────
@@ -1035,7 +1034,7 @@ async function executeTrade() {
   var lockoutUntil = new Date();
   lockoutUntil.setUTCDate(lockoutUntil.getUTCDate()+1);
   lockoutUntil.setUTCHours(7,0,0,0);
-  var r = await sb.from('trades').insert({
+  var r = await sbFetch('/rest/v1/trades','POST',{
     user_id:      currentUser.id,
     instrument:   currentInst,
     direction:    direction,
@@ -1044,8 +1043,8 @@ async function executeTrade() {
     sl:           m.sl,
     tp:           m.tp,
     lockout_until: lockoutUntil.toISOString()
-  });
-  if (r.error) { alert('Error saving trade: '+r.error.message); return; }
+  },{'Prefer':'return=minimal'});
+  if (!r.ok) { alert('Error saving trade.'); return; }
   // Update lockout screen details
   var el;
   el=document.getElementById('lock-inst');  if(el) el.textContent=direction+' '+d.label;
