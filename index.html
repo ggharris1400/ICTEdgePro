@@ -896,7 +896,7 @@ var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 var currentUser = null;
 
 function sbFetch(path, method, body, extraHeaders) {
-  var token = localStorage.getItem('fs_token');
+  var token = lsGet('fs_token');
   var headers = {'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY};
   if (token) headers['Authorization'] = 'Bearer ' + token;
   if (extraHeaders) Object.keys(extraHeaders).forEach(function(k){headers[k]=extraHeaders[k];});
@@ -905,12 +905,16 @@ function sbFetch(path, method, body, extraHeaders) {
   return fetch(SUPABASE_URL + path, opts);
 }
 
+// Safe localStorage wrappers — fall back to no-op if storage is blocked (data: URLs, etc.)
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
+
 // Restore session from localStorage on page load
 (function(){
-  var u = localStorage.getItem('fs_user');
-  var t = localStorage.getItem('fs_token');
-  if (u && t) { try { currentUser = JSON.parse(u); } catch(e){} }
-  if (currentUser) { showApp(); } else { showAuthScreen(); }
+  var u=lsGet('fs_user'), t=lsGet('fs_token');
+  if(u&&t){try{currentUser=JSON.parse(u);}catch(e){}}
+  if(currentUser){showApp();}else{showAuthScreen();}
 })();
 
 function showApp() { show('landing'); populateAccount(); }
@@ -946,9 +950,9 @@ function doLogin() {
       msg.textContent=r.d.error_description||r.d.msg||r.d.error||'Login failed — check your credentials.';
       msg.className='auth-msg err';
     } else {
-      localStorage.setItem('fs_token',r.d.access_token);
+      lsSet('fs_token',r.d.access_token);
       currentUser=r.d.user;
-      localStorage.setItem('fs_user',JSON.stringify(currentUser));
+      lsSet('fs_user',JSON.stringify(currentUser));
       showApp();
     }
   })
@@ -980,9 +984,9 @@ function doSignup() {
       msg.textContent=r.d.error_description||r.d.msg||r.d.error||'Signup failed.';
       msg.className='auth-msg err';
     } else if(r.d.access_token){
-      localStorage.setItem('fs_token',r.d.access_token);
+      lsSet('fs_token',r.d.access_token);
       currentUser=r.d.user;
-      localStorage.setItem('fs_user',JSON.stringify(currentUser));
+      lsSet('fs_user',JSON.stringify(currentUser));
       showApp();
     } else {
       msg.textContent='Account created! Please log in.'; msg.className='auth-msg ok';
@@ -997,10 +1001,10 @@ function doSignup() {
 }
 
 function doLogout() {
-  var token = localStorage.getItem('fs_token');
+  var token = lsGet('fs_token');
   if (token) sbFetch('/auth/v1/logout','POST').catch(function(){});
-  localStorage.removeItem('fs_token');
-  localStorage.removeItem('fs_user');
+  lsDel('fs_token');
+  lsDel('fs_user');
   currentUser = null;
   showAuthScreen();
 }
