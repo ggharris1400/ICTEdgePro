@@ -20,11 +20,22 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
 #stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .star{position:absolute;border-radius:50%;background:white;animation:twinkle var(--dur,3s) ease-in-out infinite var(--delay,0s)}
 @keyframes twinkle{0%,100%{opacity:var(--min,.2);transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
-.nebula{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
-.nb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.18) 0%,transparent 70%);top:-100px;left:-100px;animation:drift 20s ease-in-out infinite}
-.nb2{width:500px;height:500px;background:radial-gradient(circle,rgba(191,90,242,.14) 0%,transparent 70%);bottom:-50px;right:-50px;animation:drift 25s ease-in-out infinite reverse}
-.nb3{width:400px;height:400px;background:radial-gradient(circle,rgba(0,229,255,.08) 0%,transparent 70%);top:40%;left:50%;animation:drift 18s ease-in-out infinite 5s}
+.nebula{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;display:none}
+.nb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.18) 0%,transparent 70%);top:-100px;left:-100px;animation:none}
+.nb2{width:500px;height:500px;background:radial-gradient(circle,rgba(191,90,242,.14) 0%,transparent 70%);bottom:-50px;right:-50px;animation:none}
+.nb3{width:400px;height:400px;background:radial-gradient(circle,rgba(0,229,255,.08) 0%,transparent 70%);top:40%;left:50%;animation:none}
 @keyframes drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.05)}66%{transform:translate(-20px,15px) scale(.97)}}
+
+/* TICKER BAR */
+.ticker-bar{background:rgba(13,2,37,.95);border-top:1px solid rgba(191,90,242,.15);border-bottom:1px solid rgba(191,90,242,.15);padding:8px 0;overflow:hidden;position:relative;z-index:2}
+.ticker-scroll{display:flex;gap:24px;animation:scroll-left 30s linear infinite;white-space:nowrap}
+.ticker-scroll:hover{animation-play-state:paused}
+.ticker-item{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;font-family:var(--mono);color:rgba(255,255,255,.7)}
+.ticker-symbol{color:var(--white);min-width:50px}
+.ticker-price{color:var(--cyan)}
+.ticker-change.up{color:var(--green)}
+.ticker-change.down{color:var(--pink)}
+@keyframes scroll-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
 /* NAV */
 .nav{display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid rgba(191,90,242,.2);background:rgba(3,1,10,.95);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;gap:10px}
@@ -50,28 +61,28 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
 .personal-statement{font-family:var(--head);font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.35);text-transform:uppercase;margin-bottom:24px;padding:10px 20px;border:1px solid rgba(191,90,242,.2);border-radius:0;background:rgba(124,58,237,.06)}
 .tier-showcase{position:relative;width:100%;max-width:380px;padding:32px 20px;border-radius:2px;margin-bottom:20px;overflow:hidden;border:2px solid rgba(255,255,255,.1);min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .tier-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.particle{position:absolute;border-radius:50%;animation:particleRise var(--dur,3s) ease-out infinite var(--delay,0s)}
+.particle{position:absolute;border-radius:50%;animation:none;display:none}
 @keyframes particleRise{0%{transform:translateY(0) scale(1) rotate(0deg);opacity:1}100%{transform:translateY(-220px) scale(0) rotate(360deg);opacity:0}}
-.tier-label{font-family:var(--fun);font-weight:900;font-size:56px;line-height:1;letter-spacing:3px;animation:tierFloat 2s ease-in-out infinite;position:relative;z-index:2}
+.tier-label{font-family:var(--fun);font-weight:900;font-size:56px;line-height:1;letter-spacing:3px;animation:none;position:relative;z-index:2}
 @keyframes tierFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.03)}}
-.tier-subtitle{font-family:var(--fun);font-weight:800;font-size:18px;letter-spacing:2px;margin-top:6px;animation:tierFloat 2s ease-in-out infinite .3s;position:relative;z-index:2}
+.tier-subtitle{font-family:var(--fun);font-weight:800;font-size:18px;letter-spacing:2px;margin-top:6px;animation:none;position:relative;z-index:2}
 /* S tier */
 .tier-s{background:rgba(20,15,0,.8);border-color:rgba(255,215,0,.4);box-shadow:0 0 40px rgba(255,215,0,.15)}
-.tier-s .tier-label{color:#FFD700;text-shadow:0 0 20px #FFD700,0 0 40px #FFA500,0 0 80px #FF8C00,0 0 120px rgba(255,200,0,.4)}
-.tier-s .tier-subtitle{color:#FFA500;text-shadow:0 0 10px #FFA500}
+.tier-s .tier-label{color:#FFD700;text-shadow:none}
+.tier-s .tier-subtitle{color:#FFA500;text-shadow:none}
 /* A+ tier */
 .tier-aplus{background:rgba(0,10,20,.8);border-color:rgba(185,242,255,.4);box-shadow:0 0 40px rgba(135,206,235,.15)}
-.tier-aplus .tier-label{background:linear-gradient(45deg,#B9F2FF,#fff,#87CEEB,#E0F7FF,#fff,#B9F2FF);background-size:300% 300%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:diamondShimmer 1.5s linear infinite,tierFloat 2s ease-in-out infinite;text-shadow:none;filter:drop-shadow(0 0 12px rgba(185,242,255,.8))}
+.tier-aplus .tier-label{background:linear-gradient(45deg,#B9F2FF,#fff,#87CEEB,#E0F7FF,#fff,#B9F2FF);background-size:300% 300%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:none;text-shadow:none;filter:drop-shadow(0 0 12px rgba(185,242,255,.8))}
 @keyframes diamondShimmer{0%{background-position:0% 50%}100%{background-position:300% 50%}}
-.tier-aplus .tier-subtitle{color:#B9F2FF;text-shadow:0 0 10px #B9F2FF}
+.tier-aplus .tier-subtitle{color:#B9F2FF;text-shadow:none}
 /* A tier */
 .tier-a{background:rgba(0,20,0,.8);border-color:rgba(57,255,20,.35);box-shadow:0 0 40px rgba(57,255,20,.12)}
-.tier-a .tier-label{color:#39FF14;text-shadow:0 0 20px #39FF14,0 0 40px #00FF00,0 0 80px rgba(57,255,20,.5);animation:tierFloat 2s ease-in-out infinite,greenPulse 1.5s ease-in-out infinite}
+.tier-a .tier-label{color:#39FF14;text-shadow:none;animation:none}
 @keyframes greenPulse{0%,100%{text-shadow:0 0 20px #39FF14,0 0 40px #00FF00,0 0 80px rgba(57,255,20,.5)}50%{text-shadow:0 0 30px #39FF14,0 0 60px #00FF00,0 0 120px rgba(57,255,20,.7)}}
-.tier-a .tier-subtitle{color:#39FF14;text-shadow:0 0 8px #39FF14}
+.tier-a .tier-subtitle{color:#39FF14;text-shadow:none}
 /* no setup */
 .tier-none{background:rgba(10,0,20,.8);border-color:rgba(191,90,242,.2)}
-.tier-none .tier-label{color:rgba(255,255,255,.3);font-size:72px;animation:vaultFloat 0.5s ease-in-out 3,vaultIdle 3s ease-in-out infinite 2s;text-shadow:none}
+.tier-none .tier-label{color:rgba(255,255,255,.3);font-size:72px;animation:none;text-shadow:none}
 @keyframes vaultFloat{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
 @keyframes vaultIdle{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 .tier-none .tier-subtitle{color:rgba(255,255,255,.35);font-size:14px;letter-spacing:3px}
@@ -482,6 +493,9 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
     <div class="stat-cell"><div class="stat-num">70%+</div><div class="stat-label">Win Rate</div></div>
     <div class="stat-cell"><div class="stat-num">1/day</div><div class="stat-label">Max Trades</div></div>
     <div class="stat-cell"><div class="stat-num">2.8R</div><div class="stat-label">Avg RR</div></div>
+  </div>
+  <div class="ticker-bar" id="ticker-bar">
+    <div class="ticker-scroll" id="ticker-scroll"></div>
   </div>
   <div class="premarket" style="margin-bottom:18px">
     <div class="personal-statement">"One setup. One trade. Protect the account. Trust the model."</div>
@@ -950,6 +964,7 @@ function showApp() {
     console.log('[showApp] show(landing) completed');
     populateAccount();
     console.log('[showApp] populateAccount() completed');
+    initTicker();
     var userIconEl = document.getElementById('user-icon');
     if(userIconEl) userIconEl.classList.add('visible');
   } catch(e) {
@@ -1177,6 +1192,24 @@ async function executeTrade() {
   document.querySelectorAll('.screen').forEach(function(e){e.classList.remove('active');});
   document.querySelectorAll('.nav-tab').forEach(function(e){e.classList.remove('active');});
   document.getElementById('screen-lockout').classList.add('active');
+}
+
+// Ticker data
+var TICKER_DATA=[
+  {symbol:"NQ1!",price:21850.50,change:+2.45},
+  {symbol:"MES1!",price:6145.75,change:+1.82},
+  {symbol:"XAUUSD",price:2385.40,change:-0.65}
+];
+function initTicker(){
+  var scroll=document.getElementById('ticker-scroll');
+  if(!scroll) return;
+  var html='';
+  TICKER_DATA.forEach(function(t){
+    var chgClass=t.change>=0?'up':'down';
+    var chgSign=t.change>=0?'+':'';
+    html+='<div class="ticker-item"><span class="ticker-symbol">'+t.symbol+'</span><span class="ticker-price">$'+t.price.toFixed(2)+'</span><span class="ticker-change '+chgClass+'">'+chgSign+t.change.toFixed(2)+'%</span></div>';
+  });
+  scroll.innerHTML=html+html;
 }
 
 // TradingView chart
