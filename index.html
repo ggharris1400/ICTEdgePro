@@ -396,7 +396,8 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
 .cb-conn{background:rgba(0,229,255,.1);color:var(--cyan);border:1px solid rgba(0,229,255,.18)}.cb-disc{background:rgba(255,255,255,.05);color:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.08)}
 
 /* ── AUTH ── */
-.auth-screen{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 44px);padding:20px}
+.auth-screen{display:none;align-items:center;justify-content:center;min-height:calc(100vh - 44px);padding:20px}
+.auth-screen.active{display:flex}
 .auth-box{width:100%;max-width:340px;background:rgba(8,1,24,.98);border:1px solid rgba(191,90,242,.2);border-top:2px solid var(--neon);padding:32px 24px;position:relative;z-index:1}
 .auth-logo{font-family:var(--head);font-size:22px;font-weight:700;text-align:center;margin-bottom:4px;letter-spacing:2px;text-shadow:0 0 20px rgba(191,90,242,.6)}
 .auth-logo span{color:var(--neon)}
