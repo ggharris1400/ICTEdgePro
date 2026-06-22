@@ -896,6 +896,15 @@ var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 var currentUser = null;
 var GATED_SCREENS = {dashboard:true, progress:true, account:true, lockout:true};
 
+// Global error handler — catch any JavaScript errors
+window.onerror = function(msg, url, line, col, err) {
+  console.error('[GLOBAL ERROR]', msg, 'at', url, ':', line, ':', col, err);
+  return false;
+};
+window.addEventListener('unhandledrejection', function(e) {
+  console.error('[UNHANDLED REJECTION]', e.reason);
+});
+
 function sbFetch(path, method, body, extraHeaders) {
   var token = lsGet('fs_token');
   var headers = {'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY};
@@ -910,6 +919,17 @@ function sbFetch(path, method, body, extraHeaders) {
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
+
+// Init logging — verify auth elements exist
+(function(){
+  console.log('[INIT] Page loading...');
+  var loginBtn = document.getElementById('login-btn');
+  var signupBtn = document.getElementById('signup-btn');
+  console.log('[INIT] login-btn exists:', !!loginBtn);
+  console.log('[INIT] signup-btn exists:', !!signupBtn);
+  if (loginBtn && loginBtn.onclick === null) console.warn('[INIT] login-btn has no onclick!');
+  if (signupBtn && signupBtn.onclick === null) console.warn('[INIT] signup-btn has no onclick!');
+})();
 
 // Restore session from localStorage on page load
 (function(){
@@ -932,75 +952,100 @@ function switchAuthTab(t) {
 }
 
 function doLogin() {
-  var email = document.getElementById('login-email').value.trim();
-  var pass  = document.getElementById('login-password').value;
-  var btn   = document.getElementById('login-btn');
-  var msg   = document.getElementById('login-msg');
-  if (!email||!pass){msg.textContent='Fill in both fields.';msg.className='auth-msg err';return;}
-  btn.disabled=true; btn.textContent='Logging in...'; msg.textContent=''; msg.className='auth-msg';
-  var ctrl=new AbortController(); var tid=setTimeout(function(){ctrl.abort();},15000);
-  fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{
-    method:'POST', signal:ctrl.signal,
-    headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY},
-    body:JSON.stringify({email:email,password:pass})
-  })
-  .then(function(res){clearTimeout(tid);return res.json().then(function(d){return{ok:res.ok,d:d};});})
-  .then(function(r){
-    btn.disabled=false; btn.textContent='Login →';
-    var d=r.d||{};
-    if(!r.ok||d.error_code||d.error){
-      msg.textContent=d.error_description||d.msg||d.error||'Login failed — check your credentials.';
+  try {
+    var email = document.getElementById('login-email').value.trim();
+    var pass  = document.getElementById('login-password').value;
+    var btn   = document.getElementById('login-btn');
+    var msg   = document.getElementById('login-msg');
+    console.log('[doLogin] called with email='+email);
+    if (!email||!pass){msg.textContent='Fill in both fields.';msg.className='auth-msg err';return;}
+    btn.disabled=true; btn.textContent='Logging in...'; msg.textContent=''; msg.className='auth-msg';
+    var ctrl=new AbortController(); var tid=setTimeout(function(){ctrl.abort();},15000);
+    console.log('[doLogin] sending fetch to '+SUPABASE_URL+'/auth/v1/token');
+    fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{
+      method:'POST', signal:ctrl.signal,
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY},
+      body:JSON.stringify({email:email,password:pass})
+    })
+    .then(function(res){clearTimeout(tid);return res.json().then(function(d){return{ok:res.ok,d:d};});})
+    .then(function(r){
+      console.log('[doLogin] response ok='+r.ok, r.d);
+      btn.disabled=false; btn.textContent='Login →';
+      var d=r.d||{};
+      if(!r.ok||d.error_code||d.error){
+        msg.textContent=d.error_description||d.msg||d.error||'Login failed — check your credentials.';
+        msg.className='auth-msg err';
+        console.log('[doLogin] showing error: '+msg.textContent);
+      } else {
+        lsSet('fs_token',d.access_token);
+        currentUser=d.user||null;
+        lsSet('fs_user',JSON.stringify(currentUser));
+        console.log('[doLogin] success, calling showApp');
+        setTimeout(showApp,0);
+      }
+    })
+    .catch(function(e){
+      console.log('[doLogin] catch error:', e);
+      clearTimeout(tid); btn.disabled=false; btn.textContent='Login →';
+      msg.textContent=e.name==='AbortError'?'Request timed out — check your connection.':'Login failed — please try again.';
       msg.className='auth-msg err';
-    } else {
-      lsSet('fs_token',d.access_token);
-      currentUser=d.user||null;
-      lsSet('fs_user',JSON.stringify(currentUser));
-      setTimeout(showApp,0);
-    }
-  })
-  .catch(function(e){
-    clearTimeout(tid); btn.disabled=false; btn.textContent='Login →';
-    msg.textContent=e.name==='AbortError'?'Request timed out — check your connection.':'Login failed — please try again.';
-    msg.className='auth-msg err';
-  });
+    });
+  } catch(err) {
+    console.error('[doLogin] sync error:', err);
+    var msg = document.getElementById('login-msg');
+    if(msg) msg.textContent = 'Error: ' + err.message;
+  }
 }
 
 function doSignup() {
-  var email = document.getElementById('signup-email').value.trim();
-  var pass  = document.getElementById('signup-password').value;
-  var btn   = document.getElementById('signup-btn');
-  var msg   = document.getElementById('signup-msg');
-  if (!email||!pass){msg.textContent='Fill in both fields.';msg.className='auth-msg err';return;}
-  if (pass.length<8){msg.textContent='Password must be 8+ characters.';msg.className='auth-msg err';return;}
-  btn.disabled=true; btn.textContent='Creating account...'; msg.textContent=''; msg.className='auth-msg';
-  var ctrl=new AbortController(); var tid=setTimeout(function(){ctrl.abort();},15000);
-  fetch(SUPABASE_URL+'/auth/v1/signup',{
-    method:'POST', signal:ctrl.signal,
-    headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY},
-    body:JSON.stringify({email:email,password:pass})
-  })
-  .then(function(res){clearTimeout(tid);return res.json().then(function(d){return{ok:res.ok,d:d};});})
-  .then(function(r){
-    btn.disabled=false; btn.textContent='Create Account →';
-    var d=r.d||{};
-    if(!r.ok||d.error_code||d.error){
-      msg.textContent=d.error_description||d.msg||d.error||'Signup failed.';
+  try {
+    var email = document.getElementById('signup-email').value.trim();
+    var pass  = document.getElementById('signup-password').value;
+    var btn   = document.getElementById('signup-btn');
+    var msg   = document.getElementById('signup-msg');
+    console.log('[doSignup] called with email='+email);
+    if (!email||!pass){msg.textContent='Fill in both fields.';msg.className='auth-msg err';return;}
+    if (pass.length<8){msg.textContent='Password must be 8+ characters.';msg.className='auth-msg err';return;}
+    btn.disabled=true; btn.textContent='Creating account...'; msg.textContent=''; msg.className='auth-msg';
+    var ctrl=new AbortController(); var tid=setTimeout(function(){ctrl.abort();},15000);
+    console.log('[doSignup] sending fetch to '+SUPABASE_URL+'/auth/v1/signup');
+    fetch(SUPABASE_URL+'/auth/v1/signup',{
+      method:'POST', signal:ctrl.signal,
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY},
+      body:JSON.stringify({email:email,password:pass})
+    })
+    .then(function(res){clearTimeout(tid);return res.json().then(function(d){return{ok:res.ok,d:d};});})
+    .then(function(r){
+      console.log('[doSignup] response ok='+r.ok, r.d);
+      btn.disabled=false; btn.textContent='Create Account →';
+      var d=r.d||{};
+      if(!r.ok||d.error_code||d.error){
+        msg.textContent=d.error_description||d.msg||d.error||'Signup failed.';
+        msg.className='auth-msg err';
+        console.log('[doSignup] showing error: '+msg.textContent);
+      } else if(d.access_token){
+        lsSet('fs_token',d.access_token);
+        currentUser=d.user||null;
+        lsSet('fs_user',JSON.stringify(currentUser));
+        console.log('[doSignup] success, calling showApp');
+        setTimeout(showApp,0);
+      } else {
+        msg.textContent='Account created! Please log in.'; msg.className='auth-msg ok';
+        console.log('[doSignup] account created, switching to login tab');
+        switchAuthTab('login');
+      }
+    })
+    .catch(function(e){
+      console.log('[doSignup] catch error:', e);
+      clearTimeout(tid); btn.disabled=false; btn.textContent='Create Account →';
+      msg.textContent=e.name==='AbortError'?'Request timed out — check your connection.':'Signup failed — please try again.';
       msg.className='auth-msg err';
-    } else if(d.access_token){
-      lsSet('fs_token',d.access_token);
-      currentUser=d.user||null;
-      lsSet('fs_user',JSON.stringify(currentUser));
-      setTimeout(showApp,0);
-    } else {
-      msg.textContent='Account created! Please log in.'; msg.className='auth-msg ok';
-      switchAuthTab('login');
-    }
-  })
-  .catch(function(e){
-    clearTimeout(tid); btn.disabled=false; btn.textContent='Create Account →';
-    msg.textContent=e.name==='AbortError'?'Request timed out — check your connection.':'Signup failed — please try again.';
-    msg.className='auth-msg err';
-  });
+    });
+  } catch(err) {
+    console.error('[doSignup] sync error:', err);
+    var msg = document.getElementById('signup-msg');
+    if(msg) msg.textContent = 'Error: ' + err.message;
+  }
 }
 
 function doLogout() {
