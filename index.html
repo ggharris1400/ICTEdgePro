@@ -938,7 +938,17 @@ function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
   if(currentUser){showApp();}else{showAuthScreen();}
 })();
 
-function showApp() { show('landing'); populateAccount(); }
+function showApp() {
+  console.log('[showApp] called, currentUser=', currentUser);
+  try {
+    show('landing');
+    console.log('[showApp] show(landing) completed');
+    populateAccount();
+    console.log('[showApp] populateAccount() completed');
+  } catch(e) {
+    console.error('[showApp] error:', e);
+  }
+}
 function showAuthScreen() {
   document.querySelectorAll('.screen').forEach(function(el){el.classList.remove('active');});
   document.querySelectorAll('.nav-tab').forEach(function(el){el.classList.remove('active');});
@@ -1058,12 +1068,18 @@ function doLogout() {
 }
 
 function populateAccount() {
-  if (!currentUser) return;
+  console.log('[populateAccount] called, currentUser=', currentUser);
+  if (!currentUser) { console.log('[populateAccount] no currentUser, returning'); return; }
   var email = currentUser.email||'';
+  console.log('[populateAccount] email='+email);
   var el;
-  el=document.getElementById('acc-avatar'); if(el) el.textContent=email.slice(0,2).toUpperCase();
-  el=document.getElementById('acc-name');   if(el) el.textContent=email.split('@')[0];
-  el=document.getElementById('acc-email');  if(el) el.textContent=email;
+  el=document.getElementById('acc-avatar');
+  if(el) { el.textContent=email.slice(0,2).toUpperCase(); console.log('[populateAccount] set avatar'); }
+  el=document.getElementById('acc-name');
+  if(el) { el.textContent=email.split('@')[0]; console.log('[populateAccount] set name'); }
+  el=document.getElementById('acc-email');
+  if(el) { el.textContent=email; console.log('[populateAccount] set email'); }
+  console.log('[populateAccount] complete');
 }
 
 async function checkLockout() {
@@ -1086,18 +1102,40 @@ async function checkLockout() {
 
 // ── SCREEN NAVIGATION ────────────────────────────────────────
 function show(s) {
-  if (GATED_SCREENS[s] && !currentUser) { showAuthScreen(); return; }
+  console.log('[show] called with screen='+s);
+  if (GATED_SCREENS[s] && !currentUser) {
+    console.log('[show] screen is gated and user not logged in, showing auth');
+    showAuthScreen();
+    return;
+  }
+  console.log('[show] hiding all screens');
   document.querySelectorAll('.screen').forEach(function(el){el.classList.remove('active');});
+  console.log('[show] hiding all nav tabs');
   document.querySelectorAll('.nav-tab').forEach(function(el){el.classList.remove('active');});
   var screen = document.getElementById('screen-'+s);
-  if (screen) screen.classList.add('active');
+  console.log('[show] found screen element:', !!screen);
+  if (screen) {
+    screen.classList.add('active');
+    console.log('[show] activated screen-'+s);
+  } else {
+    console.error('[show] SCREEN NOT FOUND: screen-'+s);
+  }
   var map={landing:0,dashboard:1,progress:2,faq:3,legal:4,account:5};
   var tabIdx = map[s];
+  console.log('[show] tabIdx for '+s+' is', tabIdx);
   if (tabIdx !== undefined) {
     var tabs = document.querySelectorAll('.nav-tab');
-    if (tabs[tabIdx]) tabs[tabIdx].classList.add('active');
+    console.log('[show] found '+tabs.length+' nav tabs');
+    if (tabs[tabIdx]) {
+      tabs[tabIdx].classList.add('active');
+      console.log('[show] activated nav tab '+tabIdx);
+    }
   }
-  if (s==='dashboard') checkLockout();
+  if (s==='dashboard') {
+    console.log('[show] checking lockout');
+    checkLockout();
+  }
+  console.log('[show] complete');
 }
 
 // ── TRADE EXECUTION ──────────────────────────────────────────
