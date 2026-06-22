@@ -926,54 +926,74 @@ function switchAuthTab(t) {
   document.getElementById('auth-signup-form').style.display = t==='signup' ? '' : 'none';
 }
 
-async function doLogin() {
+function doLogin() {
   var email = document.getElementById('login-email').value.trim();
   var pass  = document.getElementById('login-password').value;
   var btn   = document.getElementById('login-btn');
   var msg   = document.getElementById('login-msg');
   if (!email||!pass){msg.textContent='Fill in both fields.';msg.className='auth-msg err';return;}
-  btn.disabled=true; btn.textContent='Logging in...';
-  try {
-    var res  = await sbFetch('/auth/v1/token?grant_type=password','POST',{email:email,password:pass});
-    var data = await res.json();
+  btn.disabled=true; btn.textContent='Logging in...'; msg.textContent=''; msg.className='auth-msg';
+  var ctrl=new AbortController(); var tid=setTimeout(function(){ctrl.abort();},15000);
+  fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{
+    method:'POST', signal:ctrl.signal,
+    headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY},
+    body:JSON.stringify({email:email,password:pass})
+  })
+  .then(function(res){clearTimeout(tid);return res.json().then(function(d){return{ok:res.ok,d:d};});})
+  .then(function(r){
     btn.disabled=false; btn.textContent='Login →';
-    if (!res.ok||data.error_code||data.error){
-      msg.textContent=data.error_description||data.msg||data.error||'Login failed.';
+    if(!r.ok||r.d.error_code||r.d.error){
+      msg.textContent=r.d.error_description||r.d.msg||r.d.error||'Login failed — check your credentials.';
       msg.className='auth-msg err';
     } else {
-      localStorage.setItem('fs_token', data.access_token);
-      currentUser = data.user;
-      localStorage.setItem('fs_user', JSON.stringify(currentUser));
+      localStorage.setItem('fs_token',r.d.access_token);
+      currentUser=r.d.user;
+      localStorage.setItem('fs_user',JSON.stringify(currentUser));
       showApp();
     }
-  } catch(e){ btn.disabled=false; btn.textContent='Login →'; msg.textContent='Network error — try again.'; msg.className='auth-msg err'; }
+  })
+  .catch(function(e){
+    clearTimeout(tid); btn.disabled=false; btn.textContent='Login →';
+    msg.textContent=e.name==='AbortError'?'Request timed out — check your connection.':'Network error: '+e.message;
+    msg.className='auth-msg err';
+  });
 }
 
-async function doSignup() {
+function doSignup() {
   var email = document.getElementById('signup-email').value.trim();
   var pass  = document.getElementById('signup-password').value;
   var btn   = document.getElementById('signup-btn');
   var msg   = document.getElementById('signup-msg');
   if (!email||!pass){msg.textContent='Fill in both fields.';msg.className='auth-msg err';return;}
   if (pass.length<8){msg.textContent='Password must be 8+ characters.';msg.className='auth-msg err';return;}
-  btn.disabled=true; btn.textContent='Creating account...';
-  try {
-    var res  = await sbFetch('/auth/v1/signup','POST',{email:email,password:pass});
-    var data = await res.json();
+  btn.disabled=true; btn.textContent='Creating account...'; msg.textContent=''; msg.className='auth-msg';
+  var ctrl=new AbortController(); var tid=setTimeout(function(){ctrl.abort();},15000);
+  fetch(SUPABASE_URL+'/auth/v1/signup',{
+    method:'POST', signal:ctrl.signal,
+    headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY},
+    body:JSON.stringify({email:email,password:pass})
+  })
+  .then(function(res){clearTimeout(tid);return res.json().then(function(d){return{ok:res.ok,d:d};});})
+  .then(function(r){
     btn.disabled=false; btn.textContent='Create Account →';
-    if (!res.ok||data.error_code||data.error){
-      msg.textContent=data.error_description||data.msg||data.error||'Signup failed.';
+    if(!r.ok||r.d.error_code||r.d.error){
+      msg.textContent=r.d.error_description||r.d.msg||r.d.error||'Signup failed.';
       msg.className='auth-msg err';
-    } else if (data.access_token) {
-      localStorage.setItem('fs_token', data.access_token);
-      currentUser = data.user;
-      localStorage.setItem('fs_user', JSON.stringify(currentUser));
+    } else if(r.d.access_token){
+      localStorage.setItem('fs_token',r.d.access_token);
+      currentUser=r.d.user;
+      localStorage.setItem('fs_user',JSON.stringify(currentUser));
       showApp();
     } else {
-      msg.textContent='Account created! Now log in.'; msg.className='auth-msg ok';
+      msg.textContent='Account created! Please log in.'; msg.className='auth-msg ok';
       switchAuthTab('login');
     }
-  } catch(e){ btn.disabled=false; btn.textContent='Create Account →'; msg.textContent='Network error — try again.'; msg.className='auth-msg err'; }
+  })
+  .catch(function(e){
+    clearTimeout(tid); btn.disabled=false; btn.textContent='Create Account →';
+    msg.textContent=e.name==='AbortError'?'Request timed out — check your connection.':'Network error: '+e.message;
+    msg.className='auth-msg err';
+  });
 }
 
 function doLogout() {
@@ -1083,7 +1103,7 @@ function initTVChart(inst){
     gridColor:"rgba(124,58,237,0.06)",
     width:"100%",
     height:"380",
-    studies:["MASimple@tv-studieslibrary"],
+    studies:[],
     show_popup_button:false,
     withdateranges:true,
     allow_symbol_change:false,
@@ -1397,8 +1417,7 @@ function toggleFaq(el){var item=el.parentElement;item.classList.toggle('open');}
 // Legal tabs
 function showLegal(t){document.querySelectorAll('.legal-tab').forEach(function(b){b.classList.remove('active');});document.querySelectorAll('.legal-doc').forEach(function(d){d.classList.remove('active');});event.target.classList.add('active');document.getElementById('legal-'+t).classList.add('active');}
 
-// Nav
-function show(s){document.querySelectorAll('.screen').forEach(function(el){el.classList.remove('active');});document.querySelectorAll('.nav-tab').forEach(function(el){el.classList.remove('active');});document.getElementById('screen-'+s).classList.add('active');var map={landing:0,dashboard:1,progress:2,faq:3,legal:4,account:5};if(map[s]!==undefined)document.querySelectorAll('.nav-tab')[map[s]].classList.add('active');}
+// Nav (see show() above — duplicate removed)
 
 // Countdown
 function updateCountdown(){var now=new Date(),tom=new Date(now);tom.setDate(now.getDate()+1);tom.setHours(2,0,0,0);var diff=tom-now;var h=String(Math.floor(diff/3600000)).padStart(2,'0');var m=String(Math.floor((diff%3600000)/60000)).padStart(2,'0');var sec=String(Math.floor((diff%60000)/1000)).padStart(2,'0');var el=document.getElementById('countdown');if(el)el.textContent=h+':'+m+':'+sec;}
