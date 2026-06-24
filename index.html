@@ -281,6 +281,57 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
 .tv-badge{font-size:8px;font-weight:700;color:#39FF14;letter-spacing:1px;animation:greenPulse 1.5s ease-in-out infinite}
 .tv-container{height:380px;width:100%}
 
+/* ── SMC / ICT BOT ANALYSIS ── */
+.smc-panel{background:rgba(13,2,37,.8);border:1px solid rgba(191,90,242,.15);border-top:2px solid var(--cyan);border-radius:0;padding:14px;margin-bottom:10px}
+.smc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.smc-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.22);font-family:var(--head)}
+.smc-scanning{font-size:8px;font-weight:700;color:var(--cyan);letter-spacing:1px}
+.smc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.smc-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);padding:10px;border-radius:2px}
+.smc-box-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.2);margin-bottom:6px;font-family:var(--head)}
+.smc-struct-bull{color:var(--cyan);font-size:11px;font-weight:700;font-family:var(--head)}
+.smc-struct-bear{color:var(--pink);font-size:11px;font-weight:700;font-family:var(--head)}
+.smc-struct-meta{font-size:8px;color:rgba(255,255,255,.32);margin-top:3px}
+.smc-ob-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.smc-ob-row:last-child{border-bottom:none}
+.smc-ob-type{font-size:8px;font-weight:700;font-family:var(--head)}.smc-ob-bull{color:var(--cyan)}.smc-ob-bear{color:var(--pink)}
+.smc-ob-price{font-size:9px;font-family:var(--mono);color:rgba(255,255,255,.65)}
+.smc-ob-str{font-size:8px;font-weight:700;padding:1px 5px;border-radius:2px}
+.smc-str-h{background:rgba(57,255,20,.15);color:#39FF14}.smc-str-m{background:rgba(245,166,35,.12);color:var(--amber)}
+.smc-fvg-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.smc-fvg-row:last-child{border-bottom:none}
+.smc-fvg-type{font-size:8px;font-weight:700;font-family:var(--head)}.smc-fvg-bull{color:var(--cyan)}.smc-fvg-bear{color:var(--pink)}
+.smc-fvg-range{font-size:9px;font-family:var(--mono);color:rgba(255,255,255,.65)}
+.smc-fvg-fill{font-size:8px;padding:1px 5px;border-radius:2px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.32)}
+.smc-ict-label{font-size:10px;font-weight:700;color:var(--neon);font-family:var(--head);margin-bottom:3px}
+.smc-ict-detail{font-size:9px;color:rgba(255,255,255,.42);line-height:1.5}
+.smc-score-wrap{margin-bottom:10px}
+.smc-score-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.smc-score-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.22);font-family:var(--head)}
+.smc-score-pct{font-size:13px;font-weight:700;font-family:var(--head)}
+.smc-score-track{height:5px;background:rgba(255,255,255,.07);border-radius:2px;margin-bottom:7px}
+.smc-score-fill{height:5px;border-radius:2px;transition:width .7s ease}
+.smc-chips{display:flex;flex-wrap:wrap;gap:4px}
+.smc-chip{font-size:8px;font-weight:600;padding:2px 6px;border-radius:2px}
+.smc-chip.done{background:rgba(57,255,20,.12);color:#39FF14;border:1px solid rgba(57,255,20,.18)}
+.smc-chip.wait{background:rgba(245,166,35,.1);color:var(--amber);border:1px solid rgba(245,166,35,.18)}
+.smc-chip.fail{background:rgba(255,255,255,.04);color:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.07)}
+.smc-rec{border-radius:2px;padding:12px;border:1px solid}
+.smc-rec-long{background:rgba(0,229,255,.04);border-color:rgba(0,229,255,.28)}
+.smc-rec-short{background:rgba(255,0,144,.04);border-color:rgba(255,0,144,.22)}
+.smc-rec-wait{background:rgba(255,255,255,.02);border-color:rgba(255,255,255,.07)}
+.smc-rec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.smc-rec-action{font-size:15px;font-weight:700;font-family:var(--head)}
+.smc-rec-long .smc-rec-action{color:var(--cyan)}
+.smc-rec-short .smc-rec-action{color:var(--pink)}
+.smc-rec-wait .smc-rec-action{color:rgba(255,255,255,.35)}
+.smc-rec-rr{font-size:10px;font-weight:700;font-family:var(--head);color:var(--neon)}
+.smc-rec-levels{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.smc-rec-lv{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);padding:7px;text-align:center;border-radius:2px}
+.smc-rec-lv-lbl{font-size:8px;color:rgba(255,255,255,.26);margin-bottom:2px;font-family:var(--head);letter-spacing:.5px;text-transform:uppercase}
+.smc-rec-lv-val{font-size:11px;font-family:var(--mono);font-weight:700}
+.smc-rec-reason{font-size:9px;color:rgba(255,255,255,.4);line-height:1.6;border-top:1px solid rgba(255,255,255,.06);padding-top:8px}
+
 /* EQUITY CHART */
 .equity-card{background:rgba(13,2,37,.8);border:1px solid rgba(191,90,242,.1);border-left:2px solid var(--cyan);border-radius:0;padding:14px;margin-bottom:10px}
 .equity-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
@@ -642,6 +693,41 @@ body{background:var(--void);color:var(--white);font-family:var(--body);font-size
         <div id="tradingview_chart" style="height:100%"></div>
       </div>
     </div>
+  </div>
+
+  <!-- SMC / ICT Bot Analysis -->
+  <div class="smc-panel">
+    <div class="smc-head">
+      <span class="smc-title">SMC · ICT Bot Analysis</span>
+      <span class="smc-scanning">● SCANNING</span>
+    </div>
+    <div class="smc-grid">
+      <div class="smc-box">
+        <div class="smc-box-lbl">Market Structure</div>
+        <div id="smc-structure"></div>
+      </div>
+      <div class="smc-box">
+        <div class="smc-box-lbl">ICT Pattern</div>
+        <div id="smc-ict"></div>
+      </div>
+      <div class="smc-box">
+        <div class="smc-box-lbl">Order Blocks</div>
+        <div id="smc-ob-list"></div>
+      </div>
+      <div class="smc-box">
+        <div class="smc-box-lbl">Fair Value Gaps</div>
+        <div id="smc-fvg-list"></div>
+      </div>
+    </div>
+    <div class="smc-score-wrap">
+      <div class="smc-score-row">
+        <span class="smc-score-lbl">Confluence Score</span>
+        <span class="smc-score-pct" id="smc-score-pct">82%</span>
+      </div>
+      <div class="smc-score-track"><div class="smc-score-fill" id="smc-score-fill"></div></div>
+      <div class="smc-chips" id="smc-chips"></div>
+    </div>
+    <div id="smc-recommendation"></div>
   </div>
 
   <div class="selector-panel">
@@ -1212,6 +1298,125 @@ function initTicker(){
   scroll.innerHTML=html+html;
 }
 
+// SMC / ICT Bot Analysis Engine
+var SMC_DATA={
+  NQ:{
+    structure:{trend:"Bullish",hhhl:"HH + HL confirmed on H1",bos:"BOS on 1m · 21,720"},
+    ict:{pattern:"London Killzone · Stop Run",detail:"SSL swept at 21,614 · Bullish delivery initiating"},
+    obs:[
+      {type:"Bullish OB",price:"21,614–21,640",strength:"H",cls:"smc-ob-bull"},
+      {type:"Bearish OB",price:"22,150–22,180",strength:"M",cls:"smc-ob-bear"}
+    ],
+    fvgs:[
+      {range:"21,680–21,720",type:"IFVG",dir:"smc-fvg-bull",fill:"Unfilled"},
+      {range:"22,040–22,090",type:"FVG",dir:"smc-fvg-bear",fill:"Unfilled"}
+    ],
+    confluence:{score:82,color:"linear-gradient(90deg,var(--p500),var(--cyan))",scoreColor:"var(--cyan)",items:[
+      {text:"HTF Bullish Bias",state:"done"},{text:"SSL Swept",state:"done"},
+      {text:"BOS on 1m",state:"done"},{text:"IFVG Present",state:"done"},
+      {text:"CISD Forming",state:"wait"},{text:"Volume Confirm",state:"wait"}
+    ]},
+    rec:{action:"LONG NQ1!",cls:"smc-rec-long",entry:"21,720",sl:"21,609",tp:"22,070",rr:"3.3R",entryColor:"var(--cyan)",slColor:"var(--pink)",tpColor:"#39FF14",
+      reason:"SSL swept at 21,614 with sharp recovery. Bullish OB at 21,614–21,640 aligns with IFVG entry zone. BOS confirmed on 1m. Await CISD for trigger. Stop below sweep wick. Target BSL cluster at 22,070."}
+  },
+  ES:{
+    structure:{trend:"Bullish",hhhl:"HH + HL confirmed on H1",bos:"BOS on 1m · 6,080"},
+    ict:{pattern:"Asia Killzone · SSL Sweep",detail:"SSL swept at 6,040 · HTF OB holding bid"},
+    obs:[
+      {type:"Bullish OB",price:"6,040–6,055",strength:"H",cls:"smc-ob-bull"},
+      {type:"Bearish OB",price:"6,195–6,210",strength:"M",cls:"smc-ob-bear"}
+    ],
+    fvgs:[
+      {range:"6,080–6,095",type:"IFVG",dir:"smc-fvg-bull",fill:"Unfilled"},
+      {range:"6,175–6,195",type:"FVG",dir:"smc-fvg-bear",fill:"Partial"}
+    ],
+    confluence:{score:77,color:"linear-gradient(90deg,var(--p500),var(--cyan))",scoreColor:"var(--cyan)",items:[
+      {text:"HTF Bullish Bias",state:"done"},{text:"SSL Swept",state:"done"},
+      {text:"BOS on 1m",state:"done"},{text:"IFVG Present",state:"done"},
+      {text:"CISD Forming",state:"wait"},{text:"Volume",state:"fail"}
+    ]},
+    rec:{action:"LONG MES1!",cls:"smc-rec-long",entry:"6,095",sl:"6,038",tp:"6,200",rr:"2.8R",entryColor:"var(--cyan)",slColor:"var(--pink)",tpColor:"#39FF14",
+      reason:"Asia SSL swept at 6,040. HTF OB zone held cleanly. IFVG at 6,080–6,095 is primary entry. BOS confirmed. Await CISD on 1m close above 6,095. Volume lagging — confirm before entry. Target BSL at 6,200."}
+  },
+  GOLD:{
+    structure:{trend:"Bullish",hhhl:"HH + HL confirmed on H4",bos:"BOS on 5m · 2,296"},
+    ict:{pattern:"London Killzone · Manipulation Low",detail:"SSL swept at 2,278 · Gold demand zone active"},
+    obs:[
+      {type:"Bullish OB",price:"2,278–2,291",strength:"H",cls:"smc-ob-bull"},
+      {type:"Bearish OB",price:"2,360–2,370",strength:"M",cls:"smc-ob-bear"}
+    ],
+    fvgs:[
+      {range:"2,310–2,322",type:"IFVG",dir:"smc-fvg-bull",fill:"Unfilled"},
+      {range:"2,348–2,360",type:"FVG",dir:"smc-fvg-bear",fill:"Unfilled"}
+    ],
+    confluence:{score:86,color:"linear-gradient(90deg,#D4A843,var(--amber))",scoreColor:"var(--amber)",items:[
+      {text:"HTF Bullish Bias",state:"done"},{text:"SSL Swept",state:"done"},
+      {text:"BOS on 5m",state:"done"},{text:"IFVG Present",state:"done"},
+      {text:"CISD Confirmed",state:"done"},{text:"DXY Weakness",state:"done"}
+    ]},
+    rec:{action:"LONG XAUUSD",cls:"smc-rec-long",entry:"2,322",sl:"2,275",tp:"2,365",rr:"2.1R",entryColor:"var(--amber)",slColor:"var(--pink)",tpColor:"#39FF14",
+      reason:"Manipulation low at 2,278 swept SSL cleanly. Bullish OB 2,278–2,291 with DXY weakness confirms demand zone. IFVG at 2,310–2,322 is the OTE. CISD confirmed on 5m — all confluences met. Target BSL at 2,365."}
+  }
+};
+
+function updateSMCPanel(){
+  var d=SMC_DATA[currentInst];
+  if(!d) return;
+
+  // Market Structure
+  var structEl=document.getElementById('smc-structure');
+  if(structEl) structEl.innerHTML='<div class="'+(d.structure.trend==='Bullish'?'smc-struct-bull':'smc-struct-bear')+'">'+
+    (d.structure.trend==='Bullish'?'↑ ':'↓ ')+d.structure.trend+'</div>'+
+    '<div class="smc-struct-meta">'+d.structure.hhhl+'</div>'+
+    '<div class="smc-struct-meta" style="margin-top:2px">'+d.structure.bos+'</div>';
+
+  // ICT Pattern
+  var ictEl=document.getElementById('smc-ict');
+  if(ictEl) ictEl.innerHTML='<div class="smc-ict-label">'+d.ict.pattern+'</div>'+
+    '<div class="smc-ict-detail">'+d.ict.detail+'</div>';
+
+  // Order Blocks
+  var obEl=document.getElementById('smc-ob-list');
+  if(obEl) obEl.innerHTML=d.obs.map(function(ob){
+    return '<div class="smc-ob-row"><span class="smc-ob-type '+ob.cls+'">'+ob.type+'</span>'+
+      '<span class="smc-ob-price">'+ob.price+'</span>'+
+      '<span class="smc-ob-str '+(ob.strength==='H'?'smc-str-h':'smc-str-m')+'">'+ob.strength+'</span></div>';
+  }).join('');
+
+  // FVGs
+  var fvgEl=document.getElementById('smc-fvg-list');
+  if(fvgEl) fvgEl.innerHTML=d.fvgs.map(function(f){
+    return '<div class="smc-fvg-row"><span class="smc-fvg-type '+f.dir+'">'+f.type+'</span>'+
+      '<span class="smc-fvg-range">'+f.range+'</span>'+
+      '<span class="smc-fvg-fill">'+f.fill+'</span></div>';
+  }).join('');
+
+  // Confluence Score
+  var c=d.confluence;
+  var pctEl=document.getElementById('smc-score-pct');
+  var fillEl=document.getElementById('smc-score-fill');
+  var chipsEl=document.getElementById('smc-chips');
+  if(pctEl) pctEl.textContent=c.score+'%';
+  if(pctEl) pctEl.style.color=c.scoreColor;
+  if(fillEl){fillEl.style.width=c.score+'%';fillEl.style.background=c.color;}
+  if(chipsEl) chipsEl.innerHTML=c.items.map(function(i){
+    return '<span class="smc-chip '+i.state+'">'+i.text+'</span>';
+  }).join('');
+
+  // Bot Recommendation
+  var r=d.rec;
+  var recEl=document.getElementById('smc-recommendation');
+  if(recEl) recEl.innerHTML='<div class="smc-rec '+r.cls+'">'+
+    '<div class="smc-rec-head"><span class="smc-rec-action">'+r.action+'</span><span class="smc-rec-rr">'+r.rr+'</span></div>'+
+    '<div class="smc-rec-levels">'+
+      '<div class="smc-rec-lv"><div class="smc-rec-lv-lbl">Entry</div><div class="smc-rec-lv-val" style="color:'+r.entryColor+'">'+r.entry+'</div></div>'+
+      '<div class="smc-rec-lv"><div class="smc-rec-lv-lbl">Stop Loss</div><div class="smc-rec-lv-val" style="color:'+r.slColor+'">'+r.sl+'</div></div>'+
+      '<div class="smc-rec-lv"><div class="smc-rec-lv-lbl">Target</div><div class="smc-rec-lv-val" style="color:'+r.tpColor+'">'+r.tp+'</div></div>'+
+    '</div>'+
+    '<div class="smc-rec-reason">'+r.reason+'</div>'+
+  '</div>';
+}
+
 // TradingView chart
 var TV_SYMBOLS={NQ:"OANDA:NAS100USD",ES:"OANDA:SPX500USD",GOLD:"OANDA:XAUUSD"};
 var tvWidget=null;
@@ -1394,7 +1599,7 @@ function selModel(el,idx){
 }
 function updateConf(){var m=MODELS[selectedModel];document.getElementById('conf-title').textContent='Required Confluences — '+m.name;var cl=document.getElementById('conf-list');cl.innerHTML=m.conf.map(function(c){return '<div class="conf-item"><div class="conf-check ticked">✓</div><div class="conf-text">'+c+'</div></div>';}).join('');var sl=document.getElementById('step-list');sl.innerHTML='<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.18);margin-bottom:5px;font-family:var(--head)">Entry Steps</div>'+m.steps.map(function(s,i){return '<div class="step-item"><span class="step-num">'+(i+1)+'.</span><span>'+s+'</span></div>';}).join('');}
 function updateSignal(){var m=MODELS[selectedModel];var d=INST[currentInst];document.getElementById('sig-mdl').textContent=m.name+' · '+currentTF;document.getElementById('lock-mdl').textContent=m.name+' · '+currentTF;var isGold=currentInst==="GOLD";var tags=document.getElementById('sig-tags');tags.innerHTML=m.tags.map(function(t,i){var cls=i<4?(isGold?'stag-hl-gold':'stag-hl'):'stag';return '<span class="stag '+cls+'">'+t+'</span>';}).join('');var sc=document.getElementById('sig-card');sc.className='sig-card '+(m.dir.indexOf('Short')===0?'sc-bear':'sc-bull');var sd=document.getElementById('sig-dir');sd.textContent=(m.dir.indexOf('Short')===0?'Short ':'Long ')+d.label;sd.className='sb '+(m.dir.indexOf('Short')===0?'sb-bear':'sb-bull');document.getElementById('exec-auto').className='exec-btn '+(isGold?'eb-auto-gold':'eb-auto');document.getElementById('sig-entry').textContent=m.entry;document.getElementById('sig-sl').textContent=m.sl;document.getElementById('sig-tp').textContent=m.tp;document.getElementById('lock-inst').textContent=(m.dir.indexOf('Short')===0?'Short ':'Long ')+d.label;document.getElementById('lock-entry').textContent=m.entry;}
-function updateDash(){var d=INST[currentInst];document.getElementById('dash-title').textContent='Today\'s Setup · '+d.label;document.getElementById('bias-text').textContent=d.bias;document.getElementById('bias-text').className='bias-text '+(d.bias==='Bullish'?'bt-bull':'bt-bear');document.getElementById('bias-arrow').textContent=d.bias==='Bullish'?'↑':'↓';document.getElementById('bias-meta').textContent=d.meta;document.getElementById('conf-fill').style.width=d.conf+'%';document.getElementById('conf-fill').style.background=d.isGold?'linear-gradient(90deg,#D4A843,#F5A623)':'linear-gradient(90deg,var(--p500),var(--cyan))';document.getElementById('conf-pct').textContent=d.conf+'%';document.getElementById('macro-lbl').textContent=d.isGold?'Gold Drivers':'Macro Fundamentals';document.getElementById('macro-list').innerHTML=d.macro.map(function(r){return '<div class="macro-item"><span class="macro-nm">'+r[0]+'</span><span class="macro-vl '+r[2]+'">'+r[1]+'</span></div>';}).join('');document.getElementById('liq-title').textContent=d.liqTitle;document.getElementById('liq-ladder').innerHTML=d.liq;var isGold=d.isGold;document.querySelectorAll('.model-card').forEach(function(c,i){c.classList.remove('sel','sel-gold');c.querySelector('.mc-check').textContent='';if(i===selectedModel){c.classList.add(isGold?'sel-gold':'sel');c.querySelector('.mc-check').textContent='✓';}});updateSignal();}
+function updateDash(){var d=INST[currentInst];document.getElementById('dash-title').textContent='Today\'s Setup · '+d.label;document.getElementById('bias-text').textContent=d.bias;document.getElementById('bias-text').className='bias-text '+(d.bias==='Bullish'?'bt-bull':'bt-bear');document.getElementById('bias-arrow').textContent=d.bias==='Bullish'?'↑':'↓';document.getElementById('bias-meta').textContent=d.meta;document.getElementById('conf-fill').style.width=d.conf+'%';document.getElementById('conf-fill').style.background=d.isGold?'linear-gradient(90deg,#D4A843,#F5A623)':'linear-gradient(90deg,var(--p500),var(--cyan))';document.getElementById('conf-pct').textContent=d.conf+'%';document.getElementById('macro-lbl').textContent=d.isGold?'Gold Drivers':'Macro Fundamentals';document.getElementById('macro-list').innerHTML=d.macro.map(function(r){return '<div class="macro-item"><span class="macro-nm">'+r[0]+'</span><span class="macro-vl '+r[2]+'">'+r[1]+'</span></div>';}).join('');document.getElementById('liq-title').textContent=d.liqTitle;document.getElementById('liq-ladder').innerHTML=d.liq;var isGold=d.isGold;document.querySelectorAll('.model-card').forEach(function(c,i){c.classList.remove('sel','sel-gold');c.querySelector('.mc-check').textContent='';if(i===selectedModel){c.classList.add(isGold?'sel-gold':'sel');c.querySelector('.mc-check').textContent='✓';}});updateSignal();updateSMCPanel();}
 
 // Shared chart hover helper
 function attachChartHover(ptClass,crosshairId,dotId,tooltipId,svgId,dotColor){
@@ -1558,7 +1763,7 @@ function showLegal(t){document.querySelectorAll('.legal-tab').forEach(function(b
 // Countdown
 function updateCountdown(){var now=new Date(),tom=new Date(now);tom.setDate(now.getDate()+1);tom.setHours(2,0,0,0);var diff=tom-now;var h=String(Math.floor(diff/3600000)).padStart(2,'0');var m=String(Math.floor((diff%3600000)/60000)).padStart(2,'0');var sec=String(Math.floor((diff%60000)/1000)).padStart(2,'0');var el=document.getElementById('countdown');if(el)el.textContent=h+':'+m+':'+sec;}
 
-updateConf();updateDash();updateCountdown();setInterval(updateCountdown,1000);
+updateConf();updateDash();updateSMCPanel();updateCountdown();setInterval(updateCountdown,1000);
 // Init TV chart after DOM + tv.js are ready
 if(typeof TradingView!=='undefined'){initTVChart('NQ');}else{document.querySelector('script[src*="tv.js"]').addEventListener('load',function(){initTVChart('NQ');});}
 </script>
